@@ -8,8 +8,7 @@ import java.io.File;
  * Created by jingxing on 14-8-25.
  */
 public class CoreConstant {
-	// --------------------------- 全局使用的变量(最好按照逻辑顺序，调整下成员变量顺序)
-	// --------------------------------
+	// --------------------------- 全局使用的变量(最好按照逻辑顺序，调整下成员变量顺序) --------------------------------
 
 	public static final String DATAX_CORE_CONTAINER_TASKGROUP_CHANNEL = "core.container.taskGroup.channel";
 
@@ -104,8 +103,10 @@ public class CoreConstant {
     public static final String DATAX_JOB_POSTHANDLER_PLUGINTYPE = "job.postHandler.pluginType";
 
     public static final String DATAX_JOB_POSTHANDLER_PLUGINNAME = "job.postHandler.pluginName";
-    // ----------------------------- 局部使用的变量
-    public static final String JOB_WRITER = "writer";
+
+	// ----------------------------- 局部使用的变量 -----------------------------
+
+	public static final String JOB_WRITER = "writer";
 
 	public static final String JOB_READER = "reader";
 
@@ -127,7 +128,7 @@ public class CoreConstant {
 
     public static final String TASK_ID = "taskId";
 
-    // ----------------------------- 安全模块变量 ------------------
+    // ----------------------------- 安全模块变量 ------------------------------
 
     public static final String LAST_KEYVERSION = "last.keyVersion";
 

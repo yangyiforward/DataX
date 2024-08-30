@@ -20,6 +20,18 @@
             <directoryMode>775</directoryMode>
             <outputDirectory>/bin</outputDirectory>
         </fileSet>
+        <!-- for bin/apollo -->
+        <fileSet>
+            <directory>src/main/bin/apollo</directory>
+            <includes>
+                <include>*.*</include>
+            </includes>
+            <excludes>
+                <exclude>*.pyc</exclude>
+            </excludes>
+            <directoryMode>775</directoryMode>
+            <outputDirectory>/bin/apollo</outputDirectory>
+        </fileSet>
         <!-- for scripts -->
         <fileSet>
             <directory>src/main/script</directory>

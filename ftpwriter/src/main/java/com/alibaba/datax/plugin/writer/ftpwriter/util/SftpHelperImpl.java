@@ -76,6 +76,8 @@ public class SftpHelperImpl implements IFtpHelper {
                     LOG.error(message);
                     throw DataXException.asDataXException(
                             FtpWriterErrorCode.FAIL_LOGIN, message, e);
+                } else {
+                    throw DataXException.asDataXException(FtpWriterErrorCode.FAIL_LOGIN, "", e);
                 }
             } else {
                 String message = String

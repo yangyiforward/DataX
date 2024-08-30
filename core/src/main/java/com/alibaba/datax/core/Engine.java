@@ -6,7 +6,6 @@ import com.alibaba.datax.common.spi.ErrorCode;
 import com.alibaba.datax.common.statistics.PerfTrace;
 import com.alibaba.datax.common.statistics.VMInfo;
 import com.alibaba.datax.common.util.Configuration;
-import com.alibaba.datax.common.util.MessageSource;
 import com.alibaba.datax.core.job.JobContainer;
 import com.alibaba.datax.core.taskgroup.TaskGroupContainer;
 import com.alibaba.datax.core.util.ConfigParser;
@@ -105,7 +104,8 @@ public class Engine {
         Set<String> keys = configuration.getKeys();
         for (final String key : keys) {
             boolean isSensitive = StringUtils.endsWithIgnoreCase(key, "password")
-                    || StringUtils.endsWithIgnoreCase(key, "accessKey");
+                    || StringUtils.endsWithIgnoreCase(key, "accessKey")
+                    || StringUtils.endsWithIgnoreCase(key, "secretKey");
             if (isSensitive && configuration.get(key) instanceof String) {
                 configuration.set(key, configuration.getString(key).replaceAll(".", "*"));
             }
@@ -129,9 +129,6 @@ public class Engine {
         RUNTIME_MODE = cl.getOptionValue("mode");
 
         Configuration configuration = ConfigParser.parse(jobPath);
-        // 绑定i18n信息
-        MessageSource.init(configuration);
-        MessageSource.reloadResourceBundle(Configuration.class);
 
         long jobId;
         if (!"-1".equalsIgnoreCase(jobIdString)) {
@@ -198,6 +195,10 @@ public class Engine {
     public static void main(String[] args) throws Exception {
         int exitCode = 0;
         try {
+            //设置datax家目录
+            //System.setProperty("datax.home", "D:\\Project\\gitlab\\datax-dipper\\target\\datax\\datax");
+            //设置datax的运行脚本
+            //args = new String[]{"-mode", "standalone", "-jobid", "-1", "-job", "D:\\Project\\scripts\\esToStream.json"};
             Engine.entry(args);
         } catch (Throwable e) {
             exitCode = 1;

@@ -1,0 +1,13 @@
+{
+    "name": "dolphindbreader",
+    "parameter": {
+        "username": "",
+        "password": "",
+        "connection": [
+            {
+                "querySql": [],
+                "jdbcUrl": []
+            }
+        ]
+    }
+}

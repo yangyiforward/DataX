@@ -1,31 +1,29 @@
 package com.alibaba.datax.plugin.reader.otsreader.model;
 
-import com.alicloud.openservices.tablestore.model.PrimaryKeyColumn;
-
-import java.util.List;
-
+import com.aliyun.openservices.ots.model.RowPrimaryKey;
 
 public class OTSRange {
-    private List<PrimaryKeyColumn> begin = null;
-    private List<PrimaryKeyColumn> end = null;
-    private List<PrimaryKeyColumn> split = null;
     
-    public List<PrimaryKeyColumn> getBegin() {
-        return begin;
-    }
-    public void setBegin(List<PrimaryKeyColumn> begin) {
+    private RowPrimaryKey begin = null;
+    private RowPrimaryKey end = null;
+    
+    public OTSRange() {}
+    
+    public OTSRange(RowPrimaryKey begin, RowPrimaryKey end) {
         this.begin = begin;
-    }
-    public List<PrimaryKeyColumn> getEnd() {
-        return end;
-    }
-    public void setEnd(List<PrimaryKeyColumn> end) {
         this.end = end;
     }
-    public List<PrimaryKeyColumn> getSplit() {
-        return split;
+    
+    public RowPrimaryKey getBegin() {
+        return begin;
     }
-    public void setSplit(List<PrimaryKeyColumn> split) {
-        this.split = split;
+    public void setBegin(RowPrimaryKey begin) {
+        this.begin = begin;
+    }
+    public RowPrimaryKey getEnd() {
+        return end;
+    }
+    public void setEnd(RowPrimaryKey end) {
+        this.end = end;
     }
 }

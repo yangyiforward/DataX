@@ -64,8 +64,7 @@ public class ElasticSearchClient {
         String discoveryFilter = Key.getDiscoveryFilter(conf);
         int totalConnection = this.conf.getInt("maxTotalConnection", 200);
         JestClientFactory factory = new JestClientFactory();
-        Builder httpClientConfig = new HttpClientConfig
-                .Builder(Arrays.asList(endpoints))
+        Builder httpClientConfig = new Builder(Arrays.asList(endpoints))
 //                .setPreemptiveAuth(new HttpHost(endpoint))
                 .multiThreaded(multiThread)
                 .connTimeout(readTimeout)

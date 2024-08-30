@@ -17,11 +17,11 @@ public class TSDBTest {
 
     @Test
     public void testVersion() {
-        String version = TSDBUtils.version(Const.TSDB_ADDRESS,null,null);
+        String version = TSDBUtils.version(Const.TSDB_ADDRESS);
         Assert.assertNotNull(version);
         System.out.println(version);
 
-        version = TSDBUtils.version(Const.OPENTSDB_ADDRESS,null,null);
+        version = TSDBUtils.version(Const.OPENTSDB_ADDRESS);
         Assert.assertNotNull(version);
         System.out.println(version);
     }

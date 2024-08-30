@@ -18,7 +18,7 @@ public class StringColumn extends Column {
 	}
 
 	public StringColumn(final String rawData) {
-		super(rawData, Column.Type.STRING, (null == rawData ? 0 : rawData
+		super(rawData, Type.STRING, (null == rawData ? 0 : rawData
 				.length()));
 	}
 
@@ -149,7 +149,7 @@ public class StringColumn extends Column {
 					String.format("String[\"%s\"]不能转为Date .", this.asString()));
 		}
 	}
-	
+
 	@Override
 	public Date asDate(String dateFormat) {
 		try {

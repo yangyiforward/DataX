@@ -22,28 +22,6 @@ public interface Connection4TSDB {
     String address();
 
     /**
-     * Get the setted database name.
-     *
-     * @return database
-     */
-    String database();
-
-
-    /**
-     * Get the username of Database.
-     *
-     * @return username
-     */
-    String username();
-
-    /**
-     * Get the password of Database.
-     *
-     * @return password
-     */
-    String password();
-
-    /**
      * Get the version of Database.
      *
      * @return version
@@ -91,20 +69,12 @@ public interface Connection4TSDB {
     boolean put(List<DataPoint4TSDB> dps);
 
     /**
-     * Put data points with single field.
+     * Put data points.
      *
      * @param dps data points
      * @return whether the data point is written successfully
      */
     boolean put(String dps);
-
-    /**
-     * Put data points with multi fields.
-     *
-     * @param dps data points
-     * @return whether the data point is written successfully
-     */
-    boolean mput(String dps);
 
     /**
      * Whether current version is supported.

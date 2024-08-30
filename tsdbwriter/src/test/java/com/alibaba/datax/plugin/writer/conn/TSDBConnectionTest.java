@@ -19,12 +19,12 @@ public class TSDBConnectionTest {
 
     @Test
     public void testVersion() {
-        String version = new TSDBConnection(TSDB_ADDRESS,null,null,null).version();
+        String version = new TSDBConnection(TSDB_ADDRESS).version();
         Assert.assertNotNull(version);
     }
 
     @Test
     public void testIsSupported() {
-        Assert.assertTrue(new TSDBConnection(TSDB_ADDRESS,null,null,null).isSupported());
+        Assert.assertTrue(new TSDBConnection(TSDB_ADDRESS).isSupported());
     }
 }

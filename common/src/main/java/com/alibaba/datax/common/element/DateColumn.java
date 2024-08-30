@@ -67,7 +67,7 @@ public class DateColumn extends Column {
 	 * 实际存储有date改为long的ms，节省存储
 	 * */
 	public DateColumn(final Long stamp) {
-		super(stamp, Column.Type.DATE, (null == stamp ? 0 : 8));
+		super(stamp, Type.DATE, (null == stamp ? 0 : 8));
 	}
 
 	/**
@@ -88,7 +88,7 @@ public class DateColumn extends Column {
 	/**
 	 * 构建值为time(java.sql.Time)的DateColumn，使用Date子类型为TIME，只有时间，没有日期
 	 * */
-	public DateColumn(final java.sql.Time time) {
+	public DateColumn(final Time time) {
 		this(time == null ? null : time.getTime());
 		this.setSubType(DateType.TIME);
 	}

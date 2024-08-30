@@ -27,11 +27,10 @@
         <diamond.version>3.7.2.1-SNAPSHOT</diamond.version>
 
         <!--slf4j 1.7.10 和 logback-classic 1.0.13 是好基友 -->
-        <slf4j-api-version>1.7.10</slf4j-api-version>
-        <logback-classic-version>1.0.13</logback-classic-version>
+        <slf4j-api-version>1.7.36</slf4j-api-version>
+        <logback-classic-version>1.2.13</logback-classic-version>
         <commons-io-version>2.4</commons-io-version>
         <junit-version>4.13.1</junit-version>
-        <tddl.version>5.1.22-1</tddl.version>
         <swift-version>1.0.0</swift-version>
 
         <project-sourceEncoding>UTF-8</project-sourceEncoding>
@@ -48,94 +47,87 @@
 
         <!-- reader -->
         <module>mysqlreader</module>
+        <module>mysql8xreader</module>
         <module>drdsreader</module>
         <module>sqlserverreader</module>
         <module>postgresqlreader</module>
         <module>kingbaseesreader</module>
         <module>oraclereader</module>
-        <module>cassandrareader</module>
-        <module>oceanbasev10reader</module>
-        <module>obhbasereader</module>
-        <module>rdbmsreader</module>
-
         <module>odpsreader</module>
         <module>otsreader</module>
         <module>otsstreamreader</module>
+        <module>txtfilereader</module>
+        <module>hdfsreader</module>
+        <module>hivereader</module>
+        <module>streamreader</module>
+        <module>ossreader</module>
+        <module>ftpreader</module>
+        <module>mongodbreader</module>
+        <module>rdbmsreader</module>
         <module>hbase11xreader</module>
         <module>hbase094xreader</module>
-        <module>hbase11xsqlreader</module>
-        <module>hbase20xsqlreader</module>
-
-        <module>ossreader</module>
-        <module>hdfsreader</module>
-        <module>ftpreader</module>
-        <module>txtfilereader</module>
-        <module>streamreader</module>
-        <module>clickhousereader</module>
-
-        <module>mongodbreader</module>
-        <module>tdenginereader</module>
-        <module>gdbreader</module>
         <module>tsdbreader</module>
         <module>opentsdbreader</module>
-        <module>loghubreader</module>
-        <module>datahubreader</module>
-        <module>starrocksreader</module>
+        <module>cassandrareader</module>
+        <module>gdbreader</module>
+        <module>oceanbasev10reader</module>
         <module>sybasereader</module>
-        <module>dorisreader</module>
+        <module>tbdsreader</module>
+        <module>elasticsearchreader</module>
+        <module>s3reader</module>
+        <module>opengaussreader</module>
+        <module>dolphindbreader</module>
+        <module>gaussdbreader</module>
+        <module>clickhousereader</module>
+
         <!-- writer -->
         <module>mysqlwriter</module>
-        <module>starrockswriter</module>
+        <module>mysql8xwriter</module>
         <module>drdswriter</module>
-        <module>databendwriter</module>
+        <module>odpswriter</module>
+        <module>txtfilewriter</module>
+        <module>ftpwriter</module>
+        <module>hdfswriter</module>
+        <module>streamwriter</module>
+        <module>otswriter</module>
         <module>oraclewriter</module>
         <module>sqlserverwriter</module>
         <module>postgresqlwriter</module>
         <module>kingbaseeswriter</module>
-        <module>adswriter</module>
-        <module>oceanbasev10writer</module>
-        <module>obhbasewriter</module>
-        <module>adbpgwriter</module>
-        <module>hologresjdbcwriter</module>
-        <module>rdbmswriter</module>
-
-
-        <module>odpswriter</module>
         <module>osswriter</module>
-        <module>otswriter</module>
+        <module>mongodbwriter</module>
+        <module>adswriter</module>
+        <module>ocswriter</module>
+        <module>rdbmswriter</module>
         <module>hbase11xwriter</module>
         <module>hbase094xwriter</module>
         <module>hbase11xsqlwriter</module>
-        <module>hbase20xsqlwriter</module>
-        <module>kuduwriter</module>
-        <module>ftpwriter</module>
-        <module>hdfswriter</module>
-        <module>txtfilewriter</module>
-        <module>streamwriter</module>
-
+        <module>hbase11xsqlreader</module>
         <module>elasticsearchwriter</module>
-        <module>mongodbwriter</module>
-        <module>tdenginewriter</module>
-        <module>ocswriter</module>
         <module>tsdbwriter</module>
+        <module>adbpgwriter</module>
         <module>gdbwriter</module>
-        <module>oscarwriter</module>
-        <module>loghubwriter</module>
-        <module>datahubwriter</module>
         <module>cassandrawriter</module>
         <module>clickhousewriter</module>
-        <module>doriswriter</module>
-        <module>selectdbwriter</module>
-        <module>adbmysqlwriter</module>
+        <!--<module>oscarwriter</module>-->
+        <module>oceanbasev10writer</module>
+        <module>hbase20xsqlreader</module>
+        <module>hbase20xsqlwriter</module>
+        <module>kuduwriter</module>
         <module>sybasewriter</module>
-        <module>neo4jwriter</module>
+        <module>hdfs3xwriter</module>
+        <module>hivewriter</module>
+        <module>opengausswriter</module>
+        <module>dolphindbwriter</module>
+        <module>gaussdbwriter</module>
+
         <!-- common support module -->
         <module>plugin-rdbms-util</module>
         <module>plugin-unstructured-storage-util</module>
-        <module>gaussdbreader</module>
-        <module>gaussdbwriter</module>
         <module>datax-example</module>
 
+        <!-- hook -->
+        <module>hook/kafka-report</module>
     </modules>
 
     <dependencyManagement>
@@ -169,22 +161,6 @@
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
                 <version>${logback-classic-version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.taobao.tddl</groupId>
-                <artifactId>tddl-client</artifactId>
-                <version>${tddl.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.google.guava</groupId>
-                        <artifactId>guava</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>com.taobao.diamond</groupId>
-                        <artifactId>diamond-client</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
 
             <dependency>
@@ -265,14 +241,6 @@
     </pluginRepositories>
 
     <build>
-        <resources>
-            <resource>
-                <directory>src/main/java</directory>
-                <includes>
-                    <include>**/*.properties</include>
-                </includes>
-            </resource>
-        </resources>
         <plugins>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>

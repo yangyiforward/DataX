@@ -6,9 +6,10 @@
         "column": [],
         "connection": [
             {
-                "table": [],
-                "jdbcUrl": []
+                "jdbcUrl": [],
+                "table": []
             }
-        ]
+        ],
+        "where": ""
     }
 }

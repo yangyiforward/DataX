@@ -31,6 +31,7 @@ public class Key {
 
     // not must, date format old style, do not use this
     public static final String FORMAT = "format";
+
     // for writers ' data format
     public static final String DATE_FORMAT = "dateFormat";
     
@@ -47,6 +48,9 @@ public class Key {
     
     // writer file type suffix, like .txt  .csv
     public static final String SUFFIX = "suffix";
+
+    // not must, dat format tag
+    public static final String COLUMN = "column";
 
     public static final String MARK_DONE_FILE_NAME = "markDoneFileName";
 

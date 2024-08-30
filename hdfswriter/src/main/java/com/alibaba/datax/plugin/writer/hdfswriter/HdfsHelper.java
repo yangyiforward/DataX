@@ -6,13 +6,10 @@ import com.alibaba.datax.common.exception.DataXException;
 import com.alibaba.datax.common.plugin.RecordReceiver;
 import com.alibaba.datax.common.plugin.TaskPluginCollector;
 import com.alibaba.datax.common.util.Configuration;
-import com.alibaba.datax.plugin.unstructuredstorage.util.ColumnTypeUtil;
-import com.alibaba.datax.plugin.unstructuredstorage.util.HdfsUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.hadoop.fs.*;
 import org.apache.hadoop.hive.ql.io.orc.OrcOutputFormat;
@@ -27,9 +24,6 @@ import org.apache.hadoop.mapred.*;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import parquet.hadoop.metadata.CompressionCodecName;
-import parquet.schema.*;
-
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -562,124 +556,4 @@ public  class HdfsHelper {
         transportResult.setLeft(recordList);
         return transportResult;
     }
-
-
-    public static String generateParquetSchemaFromColumnAndType(List<Configuration> columns) {
-        Map<String, ColumnTypeUtil.DecimalInfo> decimalColInfo = new HashMap<>(16);
-        ColumnTypeUtil.DecimalInfo PARQUET_DEFAULT_DECIMAL_INFO = new ColumnTypeUtil.DecimalInfo(10, 2);
-        Types.MessageTypeBuilder typeBuilder = Types.buildMessage();
-        for (Configuration column : columns) {
-            String name = column.getString("name");
-            String colType = column.getString("type");
-            Validate.notNull(name, "column.name can't be null");
-            Validate.notNull(colType, "column.type can't be null");
-            switch (colType.toLowerCase()) {
-                case "tinyint":
-                case "smallint":
-                case "int":
-                    typeBuilder.optional(PrimitiveType.PrimitiveTypeName.INT32).named(name);
-                    break;
-                case "bigint":
-                case "long":
-                    typeBuilder.optional(PrimitiveType.PrimitiveTypeName.INT64).named(name);
-                    break;
-                case "float":
-                    typeBuilder.optional(PrimitiveType.PrimitiveTypeName.FLOAT).named(name);
-                    break;
-                case "double":
-                    typeBuilder.optional(PrimitiveType.PrimitiveTypeName.DOUBLE).named(name);
-                    break;
-                case "binary":
-                    typeBuilder.optional(PrimitiveType.PrimitiveTypeName.BINARY).named(name);
-                    break;
-                case "char":
-                case "varchar":
-                case "string":
-                    typeBuilder.optional(PrimitiveType.PrimitiveTypeName.BINARY).as(OriginalType.UTF8).named(name);
-                    break;
-                case "boolean":
-                    typeBuilder.optional(PrimitiveType.PrimitiveTypeName.BOOLEAN).named(name);
-                    break;
-                case "timestamp":
-                    typeBuilder.optional(PrimitiveType.PrimitiveTypeName.INT96).named(name);
-                    break;
-                case "date":
-                    typeBuilder.optional(PrimitiveType.PrimitiveTypeName.INT32).as(OriginalType.DATE).named(name);
-                    break;
-                default:
-                    if (ColumnTypeUtil.isDecimalType(colType)) {
-                        ColumnTypeUtil.DecimalInfo decimalInfo = ColumnTypeUtil.getDecimalInfo(colType, PARQUET_DEFAULT_DECIMAL_INFO);
-                        typeBuilder.optional(PrimitiveType.PrimitiveTypeName.FIXED_LEN_BYTE_ARRAY)
-                                .as(OriginalType.DECIMAL)
-                                .precision(decimalInfo.getPrecision())
-                                .scale(decimalInfo.getScale())
-                                .length(HdfsUtil.computeMinBytesForPrecision(decimalInfo.getPrecision()))
-                                .named(name);
-
-                        decimalColInfo.put(name, decimalInfo);
-                    } else {
-                        typeBuilder.optional(PrimitiveType.PrimitiveTypeName.BINARY).named(name);
-                    }
-                    break;
-            }
-        }
-        return typeBuilder.named("m").toString();
-    }
-
-    public void parquetFileStartWrite(RecordReceiver lineReceiver, Configuration config, String fileName, TaskPluginCollector taskPluginCollector, Configuration taskConfig) {
-        MessageType messageType = null;
-        ParquetFileProccessor proccessor = null;
-        Path outputPath = new Path(fileName);
-        String schema = config.getString(Key.PARQUET_SCHEMA);
-        try {
-            messageType = MessageTypeParser.parseMessageType(schema);
-        } catch (Exception e) {
-            String message = String.format("Error parsing the Schema string [%s] into MessageType", schema);
-            LOG.error(message);
-            throw DataXException.asDataXException(HdfsWriterErrorCode.PARSE_MESSAGE_TYPE_FROM_SCHEMA_ERROR, e);
-        }
-
-        // determine the compression codec
-        String compress = config.getString(Key.COMPRESS, null);
-        // be compatible with the old NONE
-        if ("NONE".equalsIgnoreCase(compress)) {
-            compress = "UNCOMPRESSED";
-        }
-        CompressionCodecName compressionCodecName = CompressionCodecName.fromConf(compress);
-        LOG.info("The compression codec used for parquet writing is: {}", compressionCodecName, compress);
-        try {
-            proccessor = new ParquetFileProccessor(outputPath, messageType, compressionCodecName, false, taskConfig, taskPluginCollector, hadoopConf);
-        } catch (Exception e) {
-            String message = String.format("Initializing ParquetFileProccessor based on Schema[%s] failed.", schema);
-            LOG.error(message);
-            throw DataXException.asDataXException(HdfsWriterErrorCode.INIT_PROCCESSOR_FAILURE, e);
-        }
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmm");
-        String attempt = "attempt_" + dateFormat.format(new Date()) + "_0001_m_000000_0";
-        conf.set(JobContext.TASK_ATTEMPT_ID, attempt);
-        FileOutputFormat outFormat = new TextOutputFormat();
-        outFormat.setOutputPath(conf, outputPath);
-        outFormat.setWorkOutputPath(conf, outputPath);
-        try {
-            Record record = null;
-            while ((record = lineReceiver.getFromReader()) != null) {
-                proccessor.write(record);
-            }
-        } catch (Exception e) {
-            String message = String.format("An exception occurred while writing the file file [%s]", fileName);
-            LOG.error(message);
-            Path path = new Path(fileName);
-            deleteDir(path.getParent());
-            throw DataXException.asDataXException(HdfsWriterErrorCode.Write_FILE_IO_ERROR, e);
-        } finally {
-            if (proccessor != null) {
-                try {
-                    proccessor.close();
-                } catch (IOException e) {
-                    LOG.error(e.getMessage(), e);
-                }
-            }
-        }
-    }
-
 }

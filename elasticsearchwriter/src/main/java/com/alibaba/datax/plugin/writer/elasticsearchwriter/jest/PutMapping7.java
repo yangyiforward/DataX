@@ -4,7 +4,7 @@ import io.searchbox.action.GenericResultAbstractAction;
 import io.searchbox.client.config.ElasticsearchVersion;
 
 public class PutMapping7  extends GenericResultAbstractAction {
-	protected PutMapping7(PutMapping7.Builder builder) {
+	protected PutMapping7(Builder builder) {
 		super(builder);
 
 		this.indexName = builder.index;
@@ -21,7 +21,7 @@ public class PutMapping7  extends GenericResultAbstractAction {
 		return "PUT";
 	}
 
-	public static class Builder extends GenericResultAbstractAction.Builder<PutMapping7, PutMapping7.Builder> {
+	public static class Builder extends GenericResultAbstractAction.Builder<PutMapping7, Builder> {
 		private String index;
 		private Object source;
 

@@ -23,6 +23,13 @@
             </includes>
             <outputDirectory>plugin/reader/gaussdbreader</outputDirectory>
         </fileSet>
+        <fileSet>
+            <directory>src/main/libs</directory>
+            <includes>
+                <include>*.*</include>
+            </includes>
+            <outputDirectory>plugin/reader/gaussdbreader/libs</outputDirectory>
+        </fileSet>
     </fileSets>
 
     <dependencySets>

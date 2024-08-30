@@ -81,7 +81,8 @@ public class KingbaseesWriter extends Writer {
 			this.commonRdbmsWriterSlave.prepare(this.writerSliceConfig);
 		}
 
-		public void startWrite(RecordReceiver recordReceiver) {
+		@Override
+        public void startWrite(RecordReceiver recordReceiver) {
 			this.commonRdbmsWriterSlave.startWrite(recordReceiver, this.writerSliceConfig, super.getTaskPluginCollector());
 		}
 

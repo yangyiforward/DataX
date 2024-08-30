@@ -5,15 +5,14 @@ import com.alibaba.datax.common.plugin.RecordSender;
 import com.alibaba.datax.plugin.reader.tsdbreader.Constant;
 import com.alibaba.datax.plugin.reader.tsdbreader.util.HttpUtils;
 import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONReader;
 import com.alibaba.fastjson2.JSONReader.Feature;
-import com.alibaba.fastjson2.JSONWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
-
-import static com.alibaba.datax.plugin.reader.tsdbreader.Constant.METRIC_SPECIFY_KEY_PREFIX_LENGTH;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Copyright @ 2019 alibaba.com
@@ -38,10 +37,10 @@ final class TSDBDump {
     }
 
     static void dump4TSDB(TSDBConnection conn, String metric, Map<String, String> tags,
-                          Long start, Long end, RecordSender sender, Map<String, Object> hint) throws Exception {
+                          Long start, Long end, RecordSender sender) throws Exception {
         LOG.info("conn address: {}, metric: {}, start: {}, end: {}", conn.address(), metric, start, end);
 
-        String res = queryRange4SingleField(conn, metric, tags, start, end, hint);
+        String res = queryRange4SingleField(conn, metric, tags, start, end);
         List<String> dps = getDps4TSDB(metric, res);
         if (dps == null || dps.isEmpty()) {
             return;
@@ -50,10 +49,10 @@ final class TSDBDump {
     }
 
     static void dump4TSDB(TSDBConnection conn, String metric, List<String> fields, Map<String, String> tags,
-                          Long start, Long end, RecordSender sender, Map<String, Object> hint) throws Exception {
+                          Long start, Long end, RecordSender sender) throws Exception {
         LOG.info("conn address: {}, metric: {}, start: {}, end: {}", conn.address(), metric, start, end);
 
-        String res = queryRange4MultiFields(conn, metric, fields, tags, start, end, hint);
+        String res = queryRange4MultiFields(conn, metric, fields, tags, start, end);
         List<String> dps = getDps4TSDB(metric, fields, res);
         if (dps == null || dps.isEmpty()) {
             return;
@@ -62,10 +61,10 @@ final class TSDBDump {
     }
 
     static void dump4RDB(TSDBConnection conn, String metric, Map<String, String> tags,
-                         Long start, Long end, List<String> columns4RDB, RecordSender sender, Map<String, Object> hint) throws Exception {
+                         Long start, Long end, List<String> columns4RDB, RecordSender sender) throws Exception {
         LOG.info("conn address: {}, metric: {}, start: {}, end: {}", conn.address(), metric, start, end);
 
-        String res = queryRange4SingleField(conn, metric, tags, start, end, hint);
+        String res = queryRange4SingleField(conn, metric, tags, start, end);
         List<DataPoint4TSDB> dps = getDps4RDB(metric, res);
         if (dps == null || dps.isEmpty()) {
             return;
@@ -93,71 +92,12 @@ final class TSDBDump {
         }
     }
 
-    public static void dump4RDB(TSDBConnection conn, List<String> metrics, Map<String, String> tags, Long start, Long end, List<String> columns4RDB, RecordSender sender, Map<String, Object> hint) throws Exception {
-        LOG.info("conn address: {}, metric: {}, start: {}, end: {}", conn.address(), metrics, start, end);
-
-        List<DataPoint4TSDB> dps = new LinkedList<>();
-        for (String metric : metrics) {
-            String res = queryRange4SingleField(conn, metric, tags, start, end, hint);
-            final List<DataPoint4TSDB> dpList = getDps4RDB(metric, res);
-            if (dpList == null || dpList.isEmpty()) {
-                continue;
-            }
-            dps.addAll(dpList);
-        }
-        if (dps.isEmpty()) {
-            return;
-        }
-        Map<Long, Map<String, DataPoint4TSDB>> dpsCombinedByTs = new LinkedHashMap<>();
-        for (DataPoint4TSDB dp : dps) {
-            final long ts = dp.getTimestamp();
-            final Map<String, DataPoint4TSDB> dpsWithSameTs = dpsCombinedByTs.computeIfAbsent(ts, k -> new LinkedHashMap<>());
-            dpsWithSameTs.put(dp.getMetric(), dp);
-        }
-
-        for (Map.Entry<Long, Map<String, DataPoint4TSDB>> entry : dpsCombinedByTs.entrySet()) {
-            final Long ts = entry.getKey();
-            final Map<String, DataPoint4TSDB> metricAndDps = entry.getValue();
-            final Record record = sender.createRecord();
-            DataPoint4TSDB tmpDp = null;
-
-            for (final String column : columns4RDB) {
-                if (column.startsWith(Constant.METRIC_SPECIFY_KEY)) {
-                    final String m = column.substring(METRIC_SPECIFY_KEY_PREFIX_LENGTH);
-                    tmpDp = metricAndDps.get(m);
-                    if (tmpDp == null) {
-                        continue;
-                    }
-                    record.addColumn(getColumn(tmpDp.getValue()));
-                } else if (Constant.TS_SPECIFY_KEY.equals(column)) {
-                    record.addColumn(new LongColumn(ts));
-                } else if (Constant.VALUE_SPECIFY_KEY.equals(column)) {
-                    // combine 模式下，不应该定义 __value__ 字段，因为 __metric__.xxx 字段会输出对应的 value 值
-                    throw new RuntimeException("The " + Constant.VALUE_SPECIFY_KEY +
-                            " column should not be specified in combine mode!");
-                } else {
-                    // combine 模式下，应该确保 __metric__.xxx 字段的定义，放在 column 数组的最前面，以保证获取到 metric
-                    if (tmpDp == null) {
-                        throw new RuntimeException("These " + Constant.METRIC_SPECIFY_KEY_PREFIX +
-                                " column should be placed first in the column array in combine mode!");
-                    }
-                    final Object tagv = tmpDp.getTags().get(column);
-                    if (tagv == null) {
-                        continue;
-                    }
-                    record.addColumn(getColumn(tagv));
-                }
-            }
-            sender.sendToWriter(record);
-        }
-    }
-
     static void dump4RDB(TSDBConnection conn, String metric, List<String> fields,
                          Map<String, String> tags, Long start, Long end,
-                         List<String> columns4RDB, RecordSender sender, Map<String, Object> hint) throws Exception {
+                         List<String> columns4RDB, RecordSender sender) throws Exception {
         LOG.info("conn address: {}, metric: {}, start: {}, end: {}", conn.address(), metric, start, end);
 
-        String res = queryRange4MultiFields(conn, metric, fields, tags, start, end, hint);
+        String res = queryRange4MultiFields(conn, metric, fields, tags, start, end);
         List<DataPoint4TSDB> dps = getDps4RDB(metric, fields, res);
         if (dps == null || dps.isEmpty()) {
             return;
@@ -191,16 +131,14 @@ final class TSDBDump {
             valueColumn = new LongColumn((Long) value);
         } else if (value instanceof String) {
             valueColumn = new StringColumn((String) value);
-        } else if (value instanceof Integer) {
-            valueColumn = new LongColumn(((Integer)value).longValue());
         } else {
-            throw new Exception(String.format("value not supported type: [%s]", value.getClass().getSimpleName()));
+            throw new Exception(String.format("value 不支持类型: [%s]", value.getClass().getSimpleName()));
         }
         return valueColumn;
     }
 
     private static String queryRange4SingleField(TSDBConnection conn, String metric, Map<String, String> tags,
-                                                 Long start, Long end, Map<String, Object> hint) throws Exception {
+                                                 Long start, Long end) throws Exception {
         String tagKV = getFilterByTags(tags);
         String body = "{\n" +
                 "  \"start\": " + start + ",\n" +
@@ -210,15 +148,14 @@ final class TSDBDump {
                 "      \"aggregator\": \"none\",\n" +
                 "      \"metric\": \"" + metric + "\"\n" +
                 (tagKV == null ? "" : tagKV) +
-                (hint == null ? "" : (", \"hint\": " + JSON.toJSONString(hint))) +
                 "    }\n" +
                 "  ]\n" +
                 "}";
-        return HttpUtils.post(conn.address() + QUERY, conn.username(), conn.password(), body);
+        return HttpUtils.post(conn.address() + QUERY, body);
     }
 
     private static String queryRange4MultiFields(TSDBConnection conn, String metric, List<String> fields,
-                                                 Map<String, String> tags, Long start, Long end, Map<String, Object> hint) throws Exception {
+                                                 Map<String, String> tags, Long start, Long end) throws Exception {
         // fields
         StringBuilder fieldBuilder = new StringBuilder();
         fieldBuilder.append("\"fields\":[");
@@ -240,11 +177,10 @@ final class TSDBDump {
                 "      \"metric\": \"" + metric + "\",\n" +
                 fieldBuilder.toString() +
                 (tagKV == null ? "" : tagKV) +
-                (hint == null ? "" : (", \"hint\": " + JSON.toJSONString(hint))) +
                 "    }\n" +
                 "  ]\n" +
                 "}";
-        return HttpUtils.post(conn.address() + QUERY_MULTI_FIELD, conn.username(), conn.password(), body);
+        return HttpUtils.post(conn.address() + QUERY_MULTI_FIELD, body);
     }
 
     private static String getFilterByTags(Map<String, String> tags) {

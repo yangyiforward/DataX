@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 public class DataBaseWriterBuffer {
 	private static final Logger LOG = LoggerFactory.getLogger(DataBaseWriterBuffer.class);
 
-	private final AbstractConnHolder connHolder;
+	private final ConnHolder connHolder;
 	private final String dbName;
 	private Map<String, LinkedList<Record>> tableBuffer = new HashMap<String, LinkedList<Record>>();
 	private long lastCheckMemstoreTime;
@@ -33,7 +33,7 @@ public class DataBaseWriterBuffer {
 		this.dbName=dbName;
 	}
 	
-	public AbstractConnHolder getConnHolder(){
+	public ConnHolder getConnHolder(){
 		return connHolder;
 	}
 

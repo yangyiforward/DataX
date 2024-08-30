@@ -97,7 +97,7 @@ class DirtyColumn extends Column {
 
 	private DirtyColumn(Column column, int index) {
 		this(null == column ? null : column.getRawData(),
-				null == column ? Column.Type.NULL : column.getType(),
+				null == column ? Type.NULL : column.getType(),
 				null == column ? 0 : column.getByteSize(), index);
 	}
 
@@ -132,7 +132,7 @@ class DirtyColumn extends Column {
 		throw DataXException.asDataXException(FrameworkErrorCode.RUNTIME_ERROR,
 				"该方法不支持!");
 	}
-	
+
 	@Override
 	public Date asDate(String dateFormat) {
 		throw DataXException.asDataXException(FrameworkErrorCode.RUNTIME_ERROR,

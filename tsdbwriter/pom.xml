@@ -83,13 +83,6 @@
             <artifactId>fastjson2</artifactId>
         </dependency>
 
-        <!-- tsdb -->
-        <dependency>
-            <groupId>com.aliyun</groupId>
-            <artifactId>hitsdb-client</artifactId>
-            <version>0.3.7</version>
-        </dependency>
-
         <!-- test -->
         <dependency>
             <groupId>junit</groupId>

@@ -365,6 +365,7 @@ public class AdsWriter extends Writer {
             }
         }
 
+        @Override
         public void startWrite(RecordReceiver recordReceiver) {
             // 这里的是非odps数据源->odps中转临时表数据同步, load操作在job post阶段完成
             if(Constant.LOADMODE.equalsIgnoreCase(this.writeMode)) {

@@ -6,7 +6,6 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
-import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.client.*;
@@ -126,8 +125,9 @@ public class Hbase094xHelper {
 
     public static void closeAdmin(HBaseAdmin admin){
         try {
-            if(null != admin)
+            if(null != admin) {
                 admin.close();
+            }
         } catch (IOException e) {
             throw DataXException.asDataXException(Hbase094xWriterErrorCode.CLOSE_HBASE_AMIN_ERROR, e);
         }
@@ -135,8 +135,9 @@ public class Hbase094xHelper {
 
     public static void closeTable(HTable table){
         try {
-            if(null != table)
+            if(null != table) {
                 table.close();
+            }
         } catch (IOException e) {
             throw DataXException.asDataXException(Hbase094xWriterErrorCode.CLOSE_HBASE_TABLE_ERROR, e);
         }

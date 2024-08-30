@@ -102,8 +102,9 @@ public class Hbase11xHelper {
 
     public static void closeConnection(Connection hConnection){
         try {
-            if(null != hConnection)
+            if(null != hConnection) {
                 hConnection.close();
+            }
         } catch (IOException e) {
             throw DataXException.asDataXException(Hbase11xReaderErrorCode.CLOSE_HBASE_CONNECTION_ERROR, e);
         }
@@ -111,8 +112,9 @@ public class Hbase11xHelper {
 
     public static void closeAdmin(Admin admin){
         try {
-            if(null != admin)
+            if(null != admin) {
                 admin.close();
+            }
         } catch (IOException e) {
             throw DataXException.asDataXException(Hbase11xReaderErrorCode.CLOSE_HBASE_ADMIN_ERROR, e);
         }
@@ -120,8 +122,9 @@ public class Hbase11xHelper {
 
     public static void closeTable(Table table){
         try {
-            if(null != table)
+            if(null != table) {
                 table.close();
+            }
         } catch (IOException e) {
             throw DataXException.asDataXException(Hbase11xReaderErrorCode.CLOSE_HBASE_TABLE_ERROR, e);
         }
@@ -135,8 +138,9 @@ public class Hbase11xHelper {
 
     public static void closeRegionLocator(RegionLocator regionLocator){
         try {
-            if(null != regionLocator)
+            if(null != regionLocator) {
                 regionLocator.close();
+            }
         } catch (IOException e) {
             throw DataXException.asDataXException(Hbase11xReaderErrorCode.CLOSE_HBASE_REGINLOCTOR_ERROR, e);
         }

@@ -23,6 +23,13 @@
             </includes>
             <outputDirectory>plugin/writer/gaussdbwriter</outputDirectory>
         </fileSet>
+        <fileSet>
+            <directory>src/main/libs</directory>
+            <includes>
+                <include>*.*</include>
+            </includes>
+            <outputDirectory>plugin/writer/gaussdbwriter/libs</outputDirectory>
+        </fileSet>
     </fileSets>
 
     <dependencySets>

@@ -17,6 +17,7 @@ public final class Constant {
     public static String INSERT_OR_REPLACE_TEMPLATE_MARK = "insertOrReplaceTemplate";
 
     public static final String OB10_SPLIT_STRING = "||_dsc_ob10_dsc_||";
+
     public static final String OB10_SPLIT_STRING_PATTERN = "\\|\\|_dsc_ob10_dsc_\\|\\|";
 
     public static final int DEFAULT_DUMP_RECORD_LIMIT = 10;

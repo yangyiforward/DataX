@@ -147,8 +147,9 @@ public class Hbase11xHelper {
 
     public static void closeConnection(Connection hConnection){
         try {
-            if(null != hConnection)
+            if(null != hConnection) {
                 hConnection.close();
+            }
         } catch (IOException e) {
             throw DataXException.asDataXException(Hbase11xWriterErrorCode.CLOSE_HBASE_CONNECTION_ERROR, e);
         }
@@ -156,8 +157,9 @@ public class Hbase11xHelper {
 
     public static void closeAdmin(Admin admin){
         try {
-            if(null != admin)
+            if(null != admin) {
                 admin.close();
+            }
         } catch (IOException e) {
             throw DataXException.asDataXException(Hbase11xWriterErrorCode.CLOSE_HBASE_AMIN_ERROR, e);
         }
@@ -165,8 +167,9 @@ public class Hbase11xHelper {
 
     public static void closeBufferedMutator(BufferedMutator bufferedMutator){
         try {
-            if(null != bufferedMutator)
+            if(null != bufferedMutator) {
                 bufferedMutator.close();
+            }
         } catch (IOException e) {
             throw DataXException.asDataXException(Hbase11xWriterErrorCode.CLOSE_HBASE_BUFFEREDMUTATOR_ERROR, e);
         }
@@ -174,8 +177,9 @@ public class Hbase11xHelper {
 
     public static void closeTable(Table table){
         try {
-            if(null != table)
+            if(null != table) {
                 table.close();
+            }
         } catch (IOException e) {
             throw DataXException.asDataXException(Hbase11xWriterErrorCode.CLOSE_HBASE_TABLE_ERROR, e);
         }

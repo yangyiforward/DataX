@@ -4,13 +4,20 @@ import com.alibaba.datax.common.exception.CommonErrorCode;
 import com.alibaba.datax.common.exception.DataXException;
 import com.alibaba.datax.common.spi.ErrorCode;
 import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
 import com.alibaba.fastjson2.JSONWriter;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.CharUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.DESKeySpec;
 import java.io.*;
+import java.security.Key;
 import java.util.*;
 
 /**
@@ -698,6 +705,7 @@ public class Configuration {
 	/**
 	 * 拷贝当前Configuration，注意，这里使用了深拷贝，避免冲突
 	 */
+	@Override
 	public Configuration clone() {
 		Configuration config = Configuration
 				.from(Configuration.toJSONString(this.getInternal()));
@@ -1047,7 +1055,7 @@ public class Configuration {
 					"系统编程错误, 该异常代表系统编程错误, 请联系DataX开发团队!.");
 		}
 
-		for (final String each : StringUtils.split(path, ".")) {
+		for (final String each : StringUtils.split(".")) {
 			if (StringUtils.isBlank(each)) {
 				throw new IllegalArgumentException(String.format(
 						"系统编程错误, 路径[%s]不合法, 路径层次之间不能出现空白字符 .", path));
@@ -1069,12 +1077,98 @@ public class Configuration {
 	}
 
 	private Configuration(final String json) {
+		Object object = JSON.parse(json);
+
+		if (object instanceof JSONObject) {
+			//only decrypt the json which haven't been decrypted
+			if (((JSONObject) object).containsKey("job") && !((JSONObject) object).containsKey("decrypted")) {
+				object = decryptPwd((JSONObject) object);
+			}
+		}
+
 		try {
-			this.root = JSON.parse(json);
+			this.root = object;
 		} catch (Exception e) {
 			throw DataXException.asDataXException(CommonErrorCode.CONFIG_ERROR,
 					String.format("配置信息错误. 您提供的配置信息不是合法的JSON格式: %s . 请按照标准json格式提供配置信息. ", e.getMessage()));
 		}
+	}
+
+	private Object decryptPwd(JSONObject json) {
+		try {
+			Object decryptJson;
+
+			//parse every level
+			JSONObject job = json.getJSONObject("job");
+			JSONArray content = job.getJSONArray("content");
+			JSONObject contentOne = content.getJSONObject(0);
+			JSONObject reader = contentOne.getJSONObject("reader");
+			JSONObject writer = contentOne.getJSONObject("writer");
+			JSONObject readerParameter = reader.getJSONObject("parameter");
+			JSONObject writerParameter = writer.getJSONObject("parameter");
+			String readerPwd = readerParameter.get("password").toString();
+			String writerPwd = writerParameter.get("password").toString();
+
+			//decrypt the password
+			String decryptReaderPwd = decode(readerPwd);
+			String decryptWriterPwd = decode(writerPwd);
+
+			//update the json
+			readerParameter.put("password", decryptReaderPwd);
+			writerParameter.put("password", decryptWriterPwd);
+			reader.put("parameter", readerParameter);
+			writer.put("parameter", writerParameter);
+			contentOne.put("reader", reader);
+			contentOne.put("writer", writer);
+			content.set(0, contentOne);
+			job.put("content", content);
+			json.put("job", job);
+			//add the flag
+			json.put("decrypted", "true");
+			decryptJson = json;
+
+			System.out.println("Passwords in the job json is already decrypted.");
+			return decryptJson;
+		} catch (Exception e) {
+			throw DataXException.asDataXException(CommonErrorCode.CONFIG_ERROR,
+					String.format("配置信息错误. 您提供的配置信息不是合法的JSON格式: %s . 请按照标准json格式提供配置信息. ", e.getMessage()));
+		}
+	}
+
+	private String decode(String encodeContent) {
+		try	{
+			//Base64 ALGORITHM
+			//String decodeContent = new String(Base64.getDecoder().decode(encodeContent),"UTF-8");
+
+			//DES ALGORITHM
+			String originKey = "vua]28^N";
+			Key key = getSecretKey(originKey);
+			Cipher cipher = Cipher.getInstance("des");
+			cipher.init(Cipher.DECRYPT_MODE, key);
+			byte[] decode = Base64.getDecoder().decode(encodeContent);
+			byte[] decipherByte = cipher.doFinal(decode);
+			String decodeContent = new String(decipherByte);
+
+			return decodeContent;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	public static SecretKey getSecretKey(final String key) {
+		try {
+			DESKeySpec desKeySpec = new DESKeySpec(key.getBytes());
+			SecretKeyFactory instance = SecretKeyFactory.getInstance("des");
+			SecretKey secretKey = instance.generateSecret(desKeySpec);
+
+			return secretKey;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
 	}
 
 	private static String toJSONString(final Object object) {

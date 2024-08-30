@@ -71,7 +71,8 @@ ODPSWriter插件用于实现往ODPS插入或者更新数据，主要提供给etl
             "accessKey": "xxxx",
             "truncate": true,
             "odpsServer": "http://sxxx/api",
-            "tunnelServer": "http://xxx"
+            "tunnelServer": "http://xxx",
+            "accountType": "aliyun"
           }
         }
       }

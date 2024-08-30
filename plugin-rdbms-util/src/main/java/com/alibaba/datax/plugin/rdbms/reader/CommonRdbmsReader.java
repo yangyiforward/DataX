@@ -348,6 +348,44 @@ public class CommonRdbmsReader {
             }
             return record;
         }
+
+        public boolean startCheck(Configuration readerSliceConfig, int fetchSize) {
+            String doneSql = readerSliceConfig.getString(Key.DONE_SQL);
+
+            LOG.info("Begin to check record by Sql: [{}\n] {}.",
+                    doneSql, basicMsg);
+
+            Connection conn = DBUtil.getConnection(this.dataBaseType, jdbcUrl,
+                    username, password);
+
+            // session config .etc related
+            DBUtil.dealWithSessionConfig(conn, readerSliceConfig,
+                    this.dataBaseType, basicMsg);
+
+            ResultSet rs = null;
+            int rowNumber = 0;
+            try {
+                rs = DBUtil.query(conn, doneSql, fetchSize);
+                while (rs.next()) {
+                    rowNumber ++;
+                }
+                LOG.info("The row numbers of doneSql record: {}", rowNumber);
+
+                //目前大盘是依赖这个打印，而之前这个Finish read record是包含了sql查询和result next的全部时间
+                LOG.info("Finished check record by Sql: [{}\n] {}.",
+                        doneSql, basicMsg);
+            } catch (Exception e) {
+                throw RdbmsException.asQueryException(this.dataBaseType, e, doneSql, null, username);
+            } finally {
+                DBUtil.closeDBResources(null, conn);
+            }
+
+            if (rowNumber >= 1) {
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
 
 }

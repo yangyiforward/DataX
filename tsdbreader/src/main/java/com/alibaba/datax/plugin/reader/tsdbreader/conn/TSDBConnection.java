@@ -19,13 +19,9 @@ import java.util.Map;
 public class TSDBConnection implements Connection4TSDB {
 
     private String address;
-    private String username;
-    private String password;
 
-    public TSDBConnection(String address, String username, String password) {
+    public TSDBConnection(String address) {
         this.address = address;
-        this.username = username;
-        this.password = password;
     }
 
     @Override
@@ -34,23 +30,13 @@ public class TSDBConnection implements Connection4TSDB {
     }
 
     @Override
-    public String username() {
-        return username;
-    }
-
-    @Override
-    public String password() {
-        return password;
-    }
-
-    @Override
     public String version() {
-        return TSDBUtils.version(address, username, password);
+        return TSDBUtils.version(address);
     }
 
     @Override
     public String config() {
-        return TSDBUtils.config(address, username, password);
+        return TSDBUtils.config(address);
     }
 
     @Override
@@ -59,28 +45,23 @@ public class TSDBConnection implements Connection4TSDB {
     }
 
     @Override
-    public void sendDPs(String metric, Map<String, String> tags, Long start, Long end, RecordSender recordSender, Map<String, Object> hint) throws Exception {
-        TSDBDump.dump4TSDB(this, metric, tags, start, end, recordSender, hint);
+    public void sendDPs(String metric, Map<String, String> tags, Long start, Long end, RecordSender recordSender) throws Exception {
+        TSDBDump.dump4TSDB(this, metric, tags, start, end, recordSender);
     }
 
     @Override
-    public void sendDPs(String metric, List<String> fields, Map<String, String> tags, Long start, Long end, RecordSender recordSender, Map<String, Object> hint) throws Exception {
-        TSDBDump.dump4TSDB(this, metric, fields, tags, start, end, recordSender, hint);
+    public void sendDPs(String metric, List<String> fields, Map<String, String> tags, Long start, Long end, RecordSender recordSender) throws Exception {
+        TSDBDump.dump4TSDB(this, metric, fields, tags, start, end, recordSender);
     }
 
     @Override
-    public void sendRecords(String metric, Map<String, String> tags, Long start, Long end, List<String> columns4RDB, Boolean isCombine, RecordSender recordSender, Map<String, Object> hint) throws Exception {
-        TSDBDump.dump4RDB(this, metric, tags, start, end, columns4RDB, recordSender, hint);
+    public void sendRecords(String metric, Map<String, String> tags, Long start, Long end, List<String> columns4RDB, RecordSender recordSender) throws Exception {
+        TSDBDump.dump4RDB(this, metric, tags, start, end, columns4RDB, recordSender);
     }
 
     @Override
-    public void sendRecords(List<String> metrics, Map<String, String> tags, Long start, Long end, List<String> columns4RDB, RecordSender recordSender, Map<String, Object> hint) throws Exception {
-        TSDBDump.dump4RDB(this, metrics, tags, start, end, columns4RDB, recordSender, hint);
-    }
-
-    @Override
-    public void sendRecords(String metric, List<String> fields, Map<String, String> tags, Long start, Long end, List<String> columns4RDB, RecordSender recordSender, Map<String, Object> hint) throws Exception {
-        TSDBDump.dump4RDB(this, metric, fields, tags, start, end, columns4RDB, recordSender, hint);
+    public void sendRecords(String metric, List<String> fields, Map<String, String> tags, Long start, Long end, List<String> columns4RDB, RecordSender recordSender) throws Exception {
+        TSDBDump.dump4RDB(this, metric, fields, tags, start, end, columns4RDB, recordSender);
     }
 
     @Override

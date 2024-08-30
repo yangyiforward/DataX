@@ -26,7 +26,9 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 
 public class HbaseSQLHelper {
@@ -48,14 +50,10 @@ public class HbaseSQLHelper {
         String zkUrl = readerConfig.getZkUrl();
 
         PhoenixConfigurationUtil.setInputClass(conf, PhoenixRecordWritable.class);
-
-        PhoenixConfigurationUtil.setInputTableName(conf, readerConfig.getSchema()+"."+table);
+        PhoenixConfigurationUtil.setInputTableName(conf, table);
 
         if (!columns.isEmpty()) {
             PhoenixConfigurationUtil.setSelectColumnNames(conf, columns.toArray(new String[columns.size()]));
-        }
-        if(Objects.nonNull(readerConfig.getWhere())){
-            PhoenixConfigurationUtil.setInputTableConditions(conf,readerConfig.getWhere());
         }
         PhoenixEmbeddedDriver.ConnectionInfo info = null;
         try {
@@ -65,29 +63,28 @@ public class HbaseSQLHelper {
                     HbaseSQLReaderErrorCode.GET_PHOENIX_CONNECTIONINFO_ERROR, "通过zkURL获取phoenix的connectioninfo出错，请检查hbase集群服务是否正常", e);
         }
         conf.set(HConstants.ZOOKEEPER_QUORUM, info.getZookeeperQuorum());
-        if (info.getPort() != null)
+        if (info.getPort() != null) {
             conf.setInt(HConstants.ZOOKEEPER_CLIENT_PORT, info.getPort());
-        if (info.getRootNode() != null)
+        }
+        if (info.getRootNode() != null) {
             conf.set(HConstants.ZOOKEEPER_ZNODE_PARENT, info.getRootNode());
-        conf.set(Key.NAME_SPACE_MAPPING_ENABLED,"true");
-        conf.set(Key.SYSTEM_TABLES_TO_NAMESPACE,"true");
+        }
         return conf;
     }
 
-    public static List<String> getPColumnNames(String connectionString, String tableName,String schema) throws SQLException {
-        Properties pro = new Properties();
-        pro.put(Key.NAME_SPACE_MAPPING_ENABLED, true);
-        pro.put(Key.SYSTEM_TABLES_TO_NAMESPACE, true);
-        Connection con = DriverManager.getConnection(connectionString,pro);
+    public static List<String> getPColumnNames(String connectionString, String tableName) throws SQLException {
+        Connection con =
+                DriverManager.getConnection(connectionString);
         PhoenixConnection phoenixConnection = con.unwrap(PhoenixConnection.class);
         MetaDataClient metaDataClient = new MetaDataClient(phoenixConnection);
-        PTable table = metaDataClient.updateCache(schema, tableName).getTable();
+        PTable table = metaDataClient.updateCache("", tableName).getTable();
         List<String> columnNames = new ArrayList<String>();
         for (PColumn pColumn : table.getColumns()) {
-            if (!pColumn.getName().getString().equals(SaltingUtil.SALTING_COLUMN_NAME))
+            if (!pColumn.getName().getString().equals(SaltingUtil.SALTING_COLUMN_NAME)) {
                 columnNames.add(pColumn.getName().getString());
-            else
+            } else {
                 LOG.info(tableName + " is salt table");
+            }
         }
         return columnNames;
     }
@@ -132,8 +129,9 @@ public class HbaseSQLHelper {
         });
         String zkQuorum = hbaseConfigMap.get(Key.HBASE_ZK_QUORUM);
         String znode = hbaseConfigMap.get(Key.HBASE_ZNODE_PARENT);
-        if(znode == null)
+        if(znode == null) {
             znode = "";
+        }
         return new Pair<String, String>(zkQuorum, znode);
     }
 }

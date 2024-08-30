@@ -1,0 +1,6 @@
+{
+    "name": "dolphindbwriter",
+    "class": "com.alibaba.datax.plugin.writer.dolphindbwriter.DolphinDBWriter",
+    "description": "useScene: prod. mechanism: Jdbc connection using the database, execute select sql, retrieve data from the ResultSet.",
+    "developer": "DolphinDB"
+}

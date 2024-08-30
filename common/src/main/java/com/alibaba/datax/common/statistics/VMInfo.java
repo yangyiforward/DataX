@@ -112,6 +112,7 @@ public class VMInfo {
         }
     }
 
+    @Override
     public String toString() {
         return "the machine info  => \n\n"
                 + "\tosInfo:\t" + osInfo + "\n"
@@ -159,8 +160,8 @@ public class VMInfo {
                 long curTotalGcCount = garbage.getCollectionCount();
                 gcStatus.setCurTotalGcCount(curTotalGcCount);
 
-                long curtotalGcTime = garbage.getCollectionTime();
-                gcStatus.setCurTotalGcTime(curtotalGcTime);
+                long curTotalGcTime = garbage.getCollectionTime();
+                gcStatus.setCurTotalGcTime(curTotalGcTime);
             }
 
             if (memoryPoolMXBeanList != null && !memoryPoolMXBeanList.isEmpty()) {
@@ -212,6 +213,7 @@ public class VMInfo {
         long maxFileDescriptorCount = -1;
         long currentOpenFileDescriptorCount = -1;
 
+        @Override
         public String toString() {
             return String.format("\ttotalPhysicalMemory:\t%,.2fG\n"
                             + "\tfreePhysicalMemory:\t%,.2fG\n"
@@ -273,6 +275,7 @@ public class VMInfo {
     private class ProcessGCStatus {
         final Map<String, GCStatus> gcStatusMap = new HashMap<String, GCStatus>();
 
+        @Override
         public String toString() {
             return "\tGC Names\t" + gcStatusMap.keySet() + "\n";
         }
@@ -316,6 +319,7 @@ public class VMInfo {
     private class ProcessMemoryStatus {
         final Map<String, MemoryStatus> memoryStatusMap = new HashMap<String, MemoryStatus>();
 
+        @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
             sb.append("\t");

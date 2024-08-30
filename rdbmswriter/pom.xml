@@ -25,33 +25,25 @@
 			</exclusions>
 		</dependency>
 
-		<!-- dm7 dm8 driver -->
 		<dependency>
 			<groupId>com.dameng</groupId>
-			<artifactId>Dm7JdbcDriver17</artifactId>
-			<version>7.6.0.142</version>
+			<artifactId>Dm7JdbcDriver16</artifactId>
+			<version>7.6.0.165</version>
 		</dependency>
-		<!-- sybase driver -->
 		<dependency>
-			<groupId>com.sybase</groupId>
-			<artifactId>jconn3</artifactId>
-			<version>1.0.0-SNAPSHOT</version>
-			<scope>system</scope>
-			<systemPath>${basedir}/src/main/libs/jconn3-1.0.0-SNAPSHOT.jar</systemPath>
+			<groupId>com.enterprisedb</groupId>
+			<artifactId>edb-jdbc</artifactId>
+			<version>42.5.4.2</version>
 		</dependency>
-		<!-- ppas driver -->
 		<dependency>
-			<groupId>ppas</groupId>
-			<artifactId>ppas</artifactId>
-			<version>16</version>
-			<scope>system</scope>
-			<systemPath>${basedir}/src/main/libs/edb-jdbc16.jar</systemPath>
+			<groupId>com.ibm.db2</groupId>
+			<artifactId>jcc</artifactId>
+			<version>11.5.8.0</version>
 		</dependency>
-		<!-- db2 driver -->
 		<dependency>
-			<groupId>com.ibm.db2.jcc</groupId>
-			<artifactId>db2jcc</artifactId>
-			<version>db2jcc4</version>
+			<groupId>io.github.lastincisor</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>8.0.29-tidb-1.0.2</version>
 		</dependency>
 
 		<dependency>

@@ -292,13 +292,22 @@ public class CommonRdbmsWriter {
                     bufferBytes += record.getMemorySize();
 
                     if (writeBuffer.size() >= batchSize || bufferBytes >= batchByteSize) {
-                        doBatchInsert(connection, writeBuffer);
+                        if (this.dataBaseType == DataBaseType.Hive) {
+                            //hive jdbc not support addBatch()
+                            doOneInsert(connection, writeBuffer);
+                        } else {
+                            doBatchInsert(connection, writeBuffer);
+                        }
                         writeBuffer.clear();
                         bufferBytes = 0;
                     }
                 }
                 if (!writeBuffer.isEmpty()) {
-                    doBatchInsert(connection, writeBuffer);
+                    if (this.dataBaseType == DataBaseType.Hive) {
+                        doOneInsert(connection, writeBuffer);
+                    } else {
+                        doBatchInsert(connection, writeBuffer);
+                    }
                     writeBuffer.clear();
                     bufferBytes = 0;
                 }
@@ -536,7 +545,7 @@ public class CommonRdbmsWriter {
                 // warn: bit(1) -> Types.BIT 可使用setBoolean
                 // warn: bit(>1) -> Types.VARBINARY 可使用setBytes
                 case Types.BIT:
-                    if (this.dataBaseType == DataBaseType.MySql) {
+                    if (this.dataBaseType == DataBaseType.MySql || this.dataBaseType == DataBaseType.MySql8) {
                         preparedStatement.setBoolean(columnIndex + 1, column.asBoolean());
                     } else {
                         preparedStatement.setString(columnIndex + 1, column.asString());

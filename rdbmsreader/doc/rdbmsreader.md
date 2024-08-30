@@ -6,7 +6,7 @@ ___
 
 ## 1 快速介绍
 
-RDBMSReader插件实现了从RDBMS读取数据。在底层实现上，RDBMSReader通过JDBC连接远程RDBMS数据库，并执行相应的sql语句将数据从RDBMS库中SELECT出来。目前支持达梦、db2、PPAS、Sybase数据库的读取。RDBMSReader是一个通用的关系数据库读插件，您可以通过注册数据库驱动等方式增加任意多样的关系数据库读支持。
+RDBMSReader插件实现了从RDBMS读取数据。在底层实现上，RDBMSReader通过JDBC连接远程RDBMS数据库，并执行相应的sql语句将数据从RDBMS库中SELECT出来。目前支持达梦、db2、enterprisedb(PPAS)数据库的读取。RDBMSReader是一个通用的关系数据库读插件，您可以通过注册数据库驱动等方式增加任意多样的关系数据库读支持。
 
 
 ## 2 实现原理
@@ -136,9 +136,9 @@ RDBMSReader插件实现了从RDBMS读取数据。在底层实现上，RDBMSReade
 	- db2格式 jdbc:db2://ip:port/database
 	- PPAS格式 jdbc:edb://ip:port/database
   
-	**rdbmsreader如何增加新的数据库支持:**  
+	**rdbmswriter如何增加新的数据库支持:**  
 	
-	- 进入rdbmsreader对应目录，这里${DATAX_HOME}为DataX主目录，即: ${DATAX_HOME}/plugin/reader/rdbmsreader
+	- 进入rdbmsreader对应目录，这里${DATAX_HOME}为DataX主目录，即: ${DATAX_HOME}/plugin/reader/rdbmswriter
 	- 在rdbmsreader插件目录下有plugin.json配置文件，在此文件中注册您具体的数据库驱动，具体放在drivers数组中。rdbmsreader插件在任务执行时会动态选择合适的数据库驱动连接数据库。
 
 

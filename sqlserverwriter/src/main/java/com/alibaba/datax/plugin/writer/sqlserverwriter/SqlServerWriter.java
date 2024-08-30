@@ -77,6 +77,7 @@ public class SqlServerWriter extends Writer {
             this.commonRdbmsWriterTask.prepare(this.writerSliceConfig);
         }
 
+        @Override
         public void startWrite(RecordReceiver recordReceiver) {
             this.commonRdbmsWriterTask.startWrite(recordReceiver,
                     this.writerSliceConfig, super.getTaskPluginCollector());

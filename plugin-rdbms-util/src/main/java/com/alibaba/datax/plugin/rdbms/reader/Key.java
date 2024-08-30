@@ -55,4 +55,8 @@ public final class Key {
     public final static String REUSE_CONN = "reuseConn";
 
     public final static String PARTITION_NAME = "partitionName";
+
+    public final static String HAVE_DONE_SQL = "haveDoneSql";
+
+    public final static String DONE_SQL = "doneSql";
 }

@@ -183,6 +183,7 @@ public class TxtFileReader extends Reader {
 			}
 
 			UnstructuredStorageReaderUtil.validateCsvReaderConfig(this.originConfig);
+
 		}
 
 		@Override

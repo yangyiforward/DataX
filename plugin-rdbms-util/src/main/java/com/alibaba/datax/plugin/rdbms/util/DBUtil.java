@@ -194,13 +194,14 @@ public final class DBUtil {
                 String[] params = grantRecord.split("\\`");
                 if (params != null && params.length >= 3) {
                     String tableName = params[3];
-                    if (params[0].contains("INSERT") && !tableName.equals("*") && tableNames.contains(tableName))
+                    if (params[0].contains("INSERT") && !tableName.equals("*") && tableNames.contains(tableName)) {
                         tableNames.remove(tableName);
+                    }
                 } else {
                     if (grantRecord.contains("INSERT") ||grantRecord.contains("ALL PRIVILEGES")) {
-                        if (grantRecord.contains("*.*"))
+                        if (grantRecord.contains("*.*")) {
                             return true;
-                        else if (grantRecord.contains(dbPattern)) {
+                        } else if (grantRecord.contains(dbPattern)) {
                             return true;
                         }
                     }
@@ -209,8 +210,9 @@ public final class DBUtil {
         } catch (Exception e) {
             LOG.warn("Check the database has the Insert Privilege failed, errorMessage:[{}]", e.getMessage());
         }
-        if (tableNames.isEmpty())
+        if (tableNames.isEmpty()) {
             return true;
+        }
         return false;
     }
 
@@ -391,7 +393,12 @@ public final class DBUtil {
                                                    String url, Properties prop) {
         try {
             Class.forName(dataBaseType.getDriverClassName());
-            DriverManager.setLoginTimeout(Constant.TIMEOUT_SECONDS);
+            if (dataBaseType.getDriverClassName().equals("org.apache.hive.jdbc.HiveDriver")) {
+                DriverManager.setLoginTimeout(Constant.HIVE_TIMEOUT_SECONDS);
+                LOG.info("Use HIVE_TIMEOUT_SECONDS");
+            } else {
+                DriverManager.setLoginTimeout(Constant.TIMEOUT_SECONDS);
+            }
             return DriverManager.getConnection(url, prop);
         } catch (Exception e) {
             throw RdbmsException.asConnException(dataBaseType, e, prop.getProperty("user"), null);
@@ -590,8 +597,8 @@ public final class DBUtil {
         try {
             connection = connect(dataBaseType, url, user, pass);
             if (connection != null) {
-                if (dataBaseType.equals(dataBaseType.MySql) && checkSlave) {
-                    //dataBaseType.MySql
+                if ((dataBaseType.equals(DataBaseType.MySql) || dataBaseType.equals(DataBaseType.MySql8)) && checkSlave) {
+                    //dataBaseType.MySql or dataBaseType.MySql8
                     boolean connOk = !isSlaveBehind(connection);
                     return connOk;
                 } else {
@@ -716,6 +723,7 @@ public final class DBUtil {
                 DBUtil.doDealWithSessionConfig(conn, sessionConfig, message);
                 break;
             case MySql:
+            case MySql8:
                 sessionConfig = config.getList(Key.SESSION,
                         new ArrayList<String>(), String.class);
                 DBUtil.doDealWithSessionConfig(conn, sessionConfig, message);

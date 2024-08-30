@@ -1,4 +1,4 @@
-# DataX GaussDbWriter
+# DataX GaussDBWriter
 
 
 ---
@@ -6,14 +6,14 @@
 
 ## 1 快速介绍
 
-GaussDbWriter插件实现了写入数据到 GaussDB主库目的表的功能。在底层实现上，GaussDbWriter通过JDBC连接远程 GaussDB 数据库，并执行相应的 insert into ... sql 语句将数据写入 GaussDB，内部会分批次提交入库。
+GaussDBWriter插件实现了写入数据到 GaussDB主库目的表的功能。在底层实现上，GaussDBWriter通过JDBC连接远程 GaussDB 数据库，并执行相应的 insert into ... sql 语句将数据写入 GaussDB，内部会分批次提交入库。
 
-GaussDbWriter面向ETL开发工程师，他们使用GaussDbWriter从数仓导入数据到GaussDB。同时 GaussDbWriter亦可以作为数据迁移工具为DBA等用户提供服务。
+GaussDBWriter面向ETL开发工程师，他们使用GaussDBWriter从数仓导入数据到GaussDB。同时 GaussDBWriter亦可以作为数据迁移工具为DBA等用户提供服务。
 
 
 ## 2 实现原理
 
-GaussDbWriter通过 DataX 框架获取 Reader 生成的协议数据，根据你配置生成相应的SQL插入语句
+GaussDBWriter通过 DataX 框架获取 Reader 生成的协议数据，根据你配置生成相应的SQL插入语句
 
 
 * `insert into...`(当主键/唯一性索引冲突时会写不进去冲突的行)
@@ -22,14 +22,14 @@ GaussDbWriter通过 DataX 框架获取 Reader 生成的协议数据，根据你�
 
     注意：
     1. 目的表所在数据库必须是主库才能写入数据；整个任务至少需具备 insert into...的权限，是否需要其他权限，取决于你任务配置中在 preSql 和 postSql 中指定的语句。
-    2. GaussDbWriter和MysqlWriter不同，不支持配置writeMode参数。
+    2. GaussDBWriter和MysqlWriter不同，不支持配置writeMode参数。
 
 
 ## 3 功能说明
 
 ### 3.1 配置样例
 
-* 这里使用一份从内存产生到 GaussDbWriter导入的数据。
+* 这里使用一份从内存产生到 GaussDBWriter导入的数据。
 
 ```json
 {
@@ -83,7 +83,7 @@ GaussDbWriter通过 DataX 框架获取 Reader 生成的协议数据，根据你�
                         ],
                         "connection": [
                             {
-                                "jdbcUrl": "jdbc:opengauss://127.0.0.1:3002/datax",
+                                "jdbcUrl": "jdbc:gaussdb://127.0.0.1:3002/datax",
                                 "table": [
                                     "test"
                                 ]
@@ -95,7 +95,6 @@ GaussDbWriter通过 DataX 框架获取 Reader 生成的协议数据，根据你�
         ]
     }
 }
-
 ```
 
 
@@ -176,9 +175,9 @@ GaussDbWriter通过 DataX 框架获取 Reader 生成的协议数据，根据你�
 
 ### 3.3 类型转换
 
-目前 GaussDbWriter支持大部分 GaussDB类型，但也存在部分没有支持的情况，请注意检查你的类型。
+目前 GaussDBWriter支持大部分 GaussDB类型，但也存在部分没有支持的情况，请注意检查你的类型。
 
-下面列出 GaussDbWriter针对 GaussDB类型转换列表:
+下面列出 GaussDBWriter针对 GaussDB类型转换列表:
 
 | DataX 内部类型| GaussDB 数据类型    |
 | -------- | -----  |
@@ -220,48 +219,3 @@ a_timestamp timestamp
     1. cpu: 16核 Intel(R) Xeon(R) CPU E5620  @ 2.40GHz
     2. mem: MemTotal: 24676836kB    MemFree: 6365080kB
     3. net: 百兆双网卡
-
-* GaussDB数据库机器参数为:
-  D12 24逻辑核  192G内存 12*480G SSD 阵列
-
-
-### 4.2 测试报告
-
-#### 4.2.1 单表测试报告
-
-| 通道数|  批量提交batchSize | DataX速度(Rec/s)| DataX流量(M/s) | DataX机器运行负载
-|--------|--------| --------|--------|--------|--------|
-|1| 128 | 9259 | 0.55 | 0.3
-|1| 512 | 10869 | 0.653 | 0.3
-|1| 2048 | 9803 | 0.589 | 0.8
-|4| 128 | 30303 | 1.82 | 1
-|4| 512 | 36363 | 2.18 | 1
-|4| 2048 | 36363 | 2.18 | 1
-|8| 128 | 57142 | 3.43 | 2
-|8| 512 | 66666 | 4.01 | 1.5
-|8| 2048 | 66666 | 4.01 | 1.1
-|16| 128 | 88888 | 5.34 | 1.8
-|16| 2048 | 94117 | 5.65 | 2.5
-|32| 512 | 76190 | 4.58 | 3
-
-#### 4.2.2 性能测试小结
-1. `channel数对性能影响很大`
-2. `通常不建议写入数据库时，通道个数 > 32`
-
-
-## FAQ
-
-***
-
-**Q: GaussDbWriter 执行 postSql 语句报错，那么数据导入到目标数据库了吗?**
-
-A: DataX 导入过程存在三块逻辑，pre 操作、导入操作、post 操作，其中任意一环报错，DataX 作业报错。由于 DataX 不能保证在同一个事务完成上述几个操作，因此有可能数据已经落入到目标端。
-
-***
-
-**Q: 按照上述说法，那么有部分脏数据导入数据库，如果影响到线上数据库怎么办?**
-
-A: 目前有两种解法，第一种配置 pre 语句，该 sql 可以清理当天导入数据， DataX 每次导入时候可以把上次清理干净并导入完整数据。
-第二种，向临时表导入数据，完成后再 rename 到线上表。
-
-***

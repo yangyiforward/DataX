@@ -10,7 +10,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.alibaba.datax.common.element.BytesColumn;
-
 import com.google.common.base.Preconditions;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections.CollectionUtils;
@@ -54,7 +53,10 @@ public class UnstructuredStorageWriterUtil {
         if (!supportedWriteModes.contains(writeMode)) {
             throw DataXException
                     .asDataXException(
-                            UnstructuredStorageWriterErrorCode.ILLEGAL_VALUE, writeMode);
+                            UnstructuredStorageWriterErrorCode.ILLEGAL_VALUE,
+                            String.format(
+                                    "仅支持 truncate, append, nonConflict 三种模式, 不支持您配置的 writeMode 模式 : [%s]",
+                                    writeMode));
         }
         writerConfiguration.set(Key.WRITE_MODE, writeMode);
 
@@ -62,6 +64,8 @@ public class UnstructuredStorageWriterUtil {
         String encoding = writerConfiguration.getString(Key.ENCODING);
         if (StringUtils.isBlank(encoding)) {
             // like "  ", null
+            LOG.warn(String.format("您的encoding配置为空, 将使用默认值[%s]",
+                    Constant.DEFAULT_ENCODING));
             writerConfiguration.set(Key.ENCODING, Constant.DEFAULT_ENCODING);
         } else {
             try {
@@ -70,7 +74,8 @@ public class UnstructuredStorageWriterUtil {
                 Charsets.toCharset(encoding);
             } catch (Exception e) {
                 throw DataXException.asDataXException(
-                        UnstructuredStorageWriterErrorCode.ILLEGAL_VALUE, e);
+                        UnstructuredStorageWriterErrorCode.ILLEGAL_VALUE,
+                        String.format("不支持您配置的编码格式:[%s]", encoding), e);
             }
         }
 
@@ -81,8 +86,12 @@ public class UnstructuredStorageWriterUtil {
         } else {
             Set<String> supportedCompress = Sets.newHashSet("gzip", "bzip2");
             if (!supportedCompress.contains(compress.toLowerCase().trim())) {
+                String message = String.format(
+                        "仅支持 [%s] 文件压缩格式 , 不支持您配置的文件压缩格式: [%s]",
+                        StringUtils.join(supportedCompress, ","), compress);
                 throw DataXException.asDataXException(
-                        UnstructuredStorageWriterErrorCode.ILLEGAL_VALUE, String.format("unsupported commpress format %s ", compress));
+                        UnstructuredStorageWriterErrorCode.ILLEGAL_VALUE,
+                        String.format(message, compress));
             }
         }
 
@@ -91,27 +100,35 @@ public class UnstructuredStorageWriterUtil {
         if (StringUtils.isBlank(fileFormat)) {
             fileFormat = Constant.FILE_FORMAT_TEXT;
             writerConfiguration.set(Key.FILE_FORMAT, fileFormat);
-        }
-        if (!Constant.FILE_FORMAT_CSV.equals(fileFormat)
+        } else if (!Constant.FILE_FORMAT_CSV.equals(fileFormat)
                 && !Constant.FILE_FORMAT_TEXT.equals(fileFormat)
+                && !Constant.FILE_FORMAT_DAT.equals(fileFormat)
                 && !Constant.FILE_FORMAT_SQL.equals(fileFormat)) {
             throw DataXException.asDataXException(
-                    UnstructuredStorageWriterErrorCode.ILLEGAL_VALUE, String.format("unsupported fileFormat  %s ", fileFormat));
+                    UnstructuredStorageWriterErrorCode.ILLEGAL_VALUE, String
+                            .format("您配置的fileFormat [%s]错误, 仅支持 csv, text, dat, sql 四种格式.",
+                                    fileFormat));
+        } else if (Constant.FILE_FORMAT_DAT.equals(fileFormat)) {
+            List<String> column = writerConfiguration.getList(Key.COLUMN, String.class);
+            if (CollectionUtils.isEmpty(column)) {
+                LOG.warn(String.format("您配置的fileFormat为[%s], 配置的column为空.", fileFormat));
+            }
         }
 
         // fieldDelimiter check
         String delimiterInStr = writerConfiguration.getString(Key.FIELD_DELIMITER);
-
-        if (StringUtils.equalsIgnoreCase(fileFormat, Constant.FILE_FORMAT_CSV) &&
-                null != delimiterInStr && 1 != delimiterInStr.length()) {
-            throw DataXException.asDataXException(
-                    UnstructuredStorageWriterErrorCode.ILLEGAL_VALUE,
-                    String.format("unsupported delimiterInStr  %s ", delimiterInStr));
-        }
+        // warn: if have, length must be one
         if (null == delimiterInStr) {
+            LOG.warn(String.format("您的delimiter配置为空, 将使用默认值[%s]",
+                    Constant.DEFAULT_FIELD_DELIMITER));
             delimiterInStr = String.valueOf(Constant.DEFAULT_FIELD_DELIMITER);
             writerConfiguration.set(Key.FIELD_DELIMITER, delimiterInStr);
+        } else if (Constant.FILE_FORMAT_CSV.equals(fileFormat) && 1 != delimiterInStr.length()) {
+            throw DataXException.asDataXException(
+                    UnstructuredStorageWriterErrorCode.ILLEGAL_VALUE,
+                    String.format("仅仅支持单字符切分, 您配置的切分为 : [%s]", delimiterInStr));
         }
+
     }
 
     public static List<Configuration> split(Configuration writerSliceConfig,
@@ -176,6 +193,8 @@ public class UnstructuredStorageWriterUtil {
                 Constant.DEFAULT_ENCODING);
         // handle blank encoding
         if (StringUtils.isBlank(encoding)) {
+            LOG.warn(String.format("您配置的encoding为[%s], 使用默认值[%s]", encoding,
+                    Constant.DEFAULT_ENCODING));
             encoding = Constant.DEFAULT_ENCODING;
         }
         String compress = config.getString(Key.COMPRESS);
@@ -201,7 +220,10 @@ public class UnstructuredStorageWriterUtil {
                 } else {
                     throw DataXException
                             .asDataXException(
-                                    UnstructuredStorageWriterErrorCode.ILLEGAL_VALUE, compress);
+                                    UnstructuredStorageWriterErrorCode.ILLEGAL_VALUE,
+                                    String.format(
+                                            "仅支持 gzip, bzip2 文件压缩格式 , 不支持您配置的文件压缩格式: [%s]",
+                                            compress));
                 }
             }
             UnstructuredStorageWriterUtil.doWriteToStream(lineReceiver, writer,
@@ -209,13 +231,16 @@ public class UnstructuredStorageWriterUtil {
         } catch (UnsupportedEncodingException uee) {
             throw DataXException
                     .asDataXException(
-                            UnstructuredStorageWriterErrorCode.Write_FILE_WITH_CHARSET_ERROR, uee);
+                            UnstructuredStorageWriterErrorCode.WRITE_FILE_WITH_CHARSET_ERROR,
+                            String.format("不支持的编码格式 : [%s]", encoding), uee);
         } catch (NullPointerException e) {
             throw DataXException.asDataXException(
-                    UnstructuredStorageWriterErrorCode.RUNTIME_EXCEPTION,e);
+                    UnstructuredStorageWriterErrorCode.RUNTIME_EXCEPTION,
+                    "运行时错误", e);
         } catch (IOException e) {
             throw DataXException.asDataXException(
-                    UnstructuredStorageWriterErrorCode.Write_FILE_IO_ERROR, e);
+                    UnstructuredStorageWriterErrorCode.WRITE_FILE_IO_ERROR,
+                    String.format("流写入错误 : [%s]", context), e);
         } finally {
             IOUtils.closeQuietly(writer);
         }
@@ -236,14 +261,18 @@ public class UnstructuredStorageWriterUtil {
 
         // warn: default false
         String fileFormat = config.getString(Key.FILE_FORMAT, Constant.FILE_FORMAT_TEXT);
-        boolean isSqlFormat = Constant.FILE_FORMAT_SQL.equalsIgnoreCase(fileFormat);
+        boolean isSqlFormat = Constant.FILE_FORMAT_SQL.equals(fileFormat);
         int commitSize = config.getInt(Key.COMMIT_SIZE, Constant.DEFAULT_COMMIT_SIZE);
         UnstructuredWriter unstructuredWriter = produceUnstructuredWriter(fileFormat, config, writer);
 
         List<String> headers = config.getList(Key.HEADER, String.class);
         if (null != headers && !headers.isEmpty() && !isSqlFormat) {
-            unstructuredWriter.writeOneRecord(headers);
+            unstructuredWriter.writeHeader(headers);
         }
+
+        List<String> columnName = Constant.FILE_FORMAT_DAT.equals(fileFormat)
+                ? config.getList(Key.COLUMN, String.class)
+                : new ArrayList<>();
 
         Record record = null;
         int receivedCount = 0;
@@ -251,15 +280,15 @@ public class UnstructuredStorageWriterUtil {
         while ((record = lineReceiver.getFromReader()) != null) {
             UnstructuredStorageWriterUtil.transportOneRecord(record,
                     nullFormat, dateParse, taskPluginCollector,
-                    unstructuredWriter, byteEncoding);
+                    unstructuredWriter, columnName, byteEncoding);
             receivedCount++;
             if (isSqlFormat && receivedCount % commitSize == 0) {
-                ((SqlWriter) unstructuredWriter).appendCommit();
+                unstructuredWriter.appendCommit();
             }
         }
 
         if (isSqlFormat) {
-            ((SqlWriter)unstructuredWriter).appendCommit();
+            unstructuredWriter.appendCommit();
         }
         // warn:由调用方控制流的关闭
         // IOUtils.closeQuietly(unstructuredWriter);
@@ -275,7 +304,12 @@ public class UnstructuredStorageWriterUtil {
 
             String fieldDelimiter = config.getString(Key.FIELD_DELIMITER, String.valueOf(Constant.DEFAULT_FIELD_DELIMITER));
             unstructuredWriter = TextCsvWriterManager.produceTextWriter(writer, fieldDelimiter, config);
+        } else if (StringUtils.equalsIgnoreCase(fileFormat, Constant.FILE_FORMAT_DAT)) {
+
+            Character fieldDelimiter = config.getChar(Key.FIELD_DELIMITER, Constant.DEFAULT_FIELD_DELIMITER);
+            unstructuredWriter = TextCsvWriterManager.produceDatWriter(writer, fieldDelimiter, config);
         } else if (StringUtils.equalsIgnoreCase(fileFormat, Constant.FILE_FORMAT_SQL)) {
+
             String tableName = config.getString(Key.TABLE_NAME);
             Preconditions.checkArgument(StringUtils.isNotEmpty(tableName), "table name is empty");
             String quoteChar = config.getString(Key.QUOTE_CHARACTER);
@@ -284,7 +318,7 @@ public class UnstructuredStorageWriterUtil {
             List<String> headers = config.getList(Key.HEADER, String.class);
             Preconditions.checkArgument(CollectionUtils.isNotEmpty(headers), "column names are empty");
             String nullFormat = config.getString(Key.NULL_FORMAT, Constant.DEFAULT_NULL_FORMAT);
-            unstructuredWriter = new SqlWriter(writer, quoteChar, tableName, lineSeparator, headers, nullFormat);
+            unstructuredWriter = TextCsvWriterManager.produceSqlWriter(writer, quoteChar, tableName, lineSeparator, headers, nullFormat);
         }
 
         return unstructuredWriter;
@@ -295,14 +329,21 @@ public class UnstructuredStorageWriterUtil {
      * */
     public static void transportOneRecord(Record record, String nullFormat,
                                           DateFormat dateParse, TaskPluginCollector taskPluginCollector,
-                                          UnstructuredWriter unstructuredWriter, String byteEncoding) {
+                                          UnstructuredWriter unstructuredWriter, List<String> columnName, String byteEncoding) {
         // warn: default is null
         if (null == nullFormat) {
             nullFormat = "null";
         }
+
+        int columnLength = 0;
+        if (CollectionUtils.isNotEmpty(columnName)) {
+            columnLength = columnName.size();
+        }
         try {
             List<String> splitedRows = new ArrayList<String>();
             int recordLength = record.getColumnNumber();
+            boolean columnReady = recordLength == columnLength;
+
             if (0 != recordLength) {
                 Column column;
                 for (int i = 0; i < recordLength; i++) {
@@ -312,19 +353,38 @@ public class UnstructuredStorageWriterUtil {
                         if (!isDateColumn) {
                             if (column instanceof BytesColumn) {
                                 if ("base64".equalsIgnoreCase(byteEncoding)) {
-                                    splitedRows.add(Base64.encodeBase64String(column.asBytes()));
+                                    if (columnReady && i > 0) {
+                                        splitedRows.add(columnName.get(i) + "=" + Base64.encodeBase64String(column.asBytes()));
+                                    } else {
+                                        splitedRows.add(Base64.encodeBase64String(column.asBytes()));
+                                    }
+                                } else {
+                                    if (columnReady && i > 0) {
+                                        splitedRows.add(columnName.get(i) + "=" + column.asString());
+                                    } else {
+                                        splitedRows.add(column.asString());
+                                    }
+                                }
+                            } else {
+                                if (columnReady && i > 0) {
+                                    splitedRows.add(columnName.get(i) + "=" + column.asString());
                                 } else {
                                     splitedRows.add(column.asString());
                                 }
-                            } else {
-                                splitedRows.add(column.asString());
                             }
                         } else {
                             if (null != dateParse) {
-                                splitedRows.add(dateParse.format(column
-                                        .asDate()));
+                                if (columnReady && i > 0) {
+                                    splitedRows.add(columnName.get(i) + "=" + dateParse.format(column.asDate()));
+                                } else {
+                                    splitedRows.add(dateParse.format(column.asDate()));
+                                }
                             } else {
-                                splitedRows.add(column.asString());
+                                if (columnReady && i > 0) {
+                                    splitedRows.add(columnName.get(i) + "=" + column.asString());
+                                } else {
+                                    splitedRows.add(column.asString());
+                                }
                             }
                         }
                     } else {
@@ -344,7 +404,7 @@ public class UnstructuredStorageWriterUtil {
             // throw exception, it is not dirty data,
             // may be network unreachable and the other problem
             throw DataXException.asDataXException(
-                    UnstructuredStorageWriterErrorCode.Write_ERROR, e.getMessage(),e);
+                    UnstructuredStorageWriterErrorCode.WRITE_ERROR, e.getMessage(),e);
         }
     }
 

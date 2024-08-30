@@ -82,6 +82,7 @@ public class RdbmsWriter extends Writer {
             this.commonRdbmsWriterSlave.prepare(this.writerSliceConfig);
         }
 
+        @Override
         public void startWrite(RecordReceiver recordReceiver) {
             this.commonRdbmsWriterSlave.startWrite(recordReceiver,
                     this.writerSliceConfig, super.getTaskPluginCollector());

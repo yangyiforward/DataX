@@ -4,13 +4,10 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,7 +17,6 @@ import com.alibaba.datax.common.element.Column;
 import com.alibaba.datax.common.exception.DataXException;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
-import com.alibaba.fastjson2.JSONException;
 import com.alibaba.fastjson2.JSONObject;
 
 import com.datastax.driver.core.BoundStatement;
@@ -33,8 +29,6 @@ import com.datastax.driver.core.TupleType;
 import com.datastax.driver.core.TupleValue;
 import com.datastax.driver.core.UDTValue;
 import com.datastax.driver.core.UserType;
-import com.datastax.driver.core.UserType.Field;
-import com.google.common.base.Splitter;
 import org.apache.commons.codec.binary.Base64;
 
 /**
@@ -143,7 +137,9 @@ public class CassandraWriterHelper {
   }
 
   public static Object parseFromJson(Object jsonObject,DataType type) throws Exception {
-    if( jsonObject == null ) return null;
+    if( jsonObject == null ) {
+      return null;
+    }
     switch (type.getName()) {
     case ASCII:
     case TEXT:

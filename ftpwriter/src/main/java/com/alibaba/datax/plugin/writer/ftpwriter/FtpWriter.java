@@ -28,6 +28,7 @@ public class FtpWriter extends Writer {
 
         private Configuration writerSliceConfig = null;
         private Set<String> allFileExists = null;
+        private Set<String> allDoneFileExists = null;
 
         private String protocol;
         private String host;
@@ -35,6 +36,9 @@ public class FtpWriter extends Writer {
         private String username;
         private String password;
         private int timeout;
+        private boolean haveDoneFile;
+        private String donePath;
+        private String doneFileName;
 
         private IFtpHelper ftpHelper = null;
 
@@ -103,6 +107,21 @@ public class FtpWriter extends Writer {
                                 protocol));
             }
             this.writerSliceConfig.set(Key.PORT, this.port);
+
+            this.haveDoneFile = this.writerSliceConfig.getBool(
+                    Key.HAVEDONEFILE, false);
+            if (haveDoneFile) {
+                String doneFile = this.writerSliceConfig.getNecessaryValue(
+                        Key.DONEFILENAME, FtpWriterErrorCode.REQUIRED_VALUE);
+                if (doneFile.contains("/")) {
+                    this.donePath = doneFile.substring(0, doneFile.lastIndexOf("/") + 1);
+                    this.doneFileName = doneFile.substring(doneFile.lastIndexOf("/") + 1);
+                } else {
+                    throw DataXException.asDataXException(
+                            FtpWriterErrorCode.ILLEGAL_VALUE, String.format(
+                                    "doneFileName为done文件绝对路径: [%s]", doneFile));
+                }
+            }
         }
 
         @Override
@@ -120,6 +139,14 @@ public class FtpWriter extends Writer {
                     fileName);
             this.allFileExists = allFileExists;
 
+            if (haveDoneFile) {
+                this.ftpHelper.mkDirRecursive(donePath);
+
+                Set<String> allDoneFileExists = this.ftpHelper.getAllFilesInDir(donePath,
+                        doneFileName);
+                this.allDoneFileExists = allDoneFileExists;
+            }
+
             // truncate option handler
             if ("truncate".equals(writeMode)) {
                 LOG.info(String.format(
@@ -129,6 +156,12 @@ public class FtpWriter extends Writer {
                 for (String each : allFileExists) {
                     fullFileNameToDelete.add(UnstructuredStorageWriterUtil
                             .buildFilePath(path, each, null));
+                }
+                if (haveDoneFile) {
+                    for (String each : allDoneFileExists) {
+                        fullFileNameToDelete.add(UnstructuredStorageWriterUtil
+                                .buildFilePath(donePath, each, null));
+                    }
                 }
                 LOG.info(String.format(
                         "删除目录path:[%s] 下指定前缀fileName:[%s] 文件列表如下: [%s]", path,
@@ -202,6 +235,9 @@ public class FtpWriter extends Writer {
         private String path;
         private String fileName;
         private String suffix;
+        private boolean haveDoneFile;
+        private String donePath;
+        private String doneFileName;
 
         private String protocol;
         private String host;
@@ -228,6 +264,15 @@ public class FtpWriter extends Writer {
             this.timeout = this.writerSliceConfig.getInt(Key.TIMEOUT,
                     Constant.DEFAULT_TIMEOUT);
             this.protocol = this.writerSliceConfig.getString(Key.PROTOCOL);
+            this.haveDoneFile = this.writerSliceConfig.getBool(Key.HAVEDONEFILE, false);
+            if (haveDoneFile) {
+                String doneFile = this.writerSliceConfig.getNecessaryValue(
+                        Key.DONEFILENAME, FtpWriterErrorCode.REQUIRED_VALUE);
+                if (doneFile.contains("/")) {
+                    this.donePath = doneFile.substring(0, doneFile.lastIndexOf("/") + 1);
+                    this.doneFileName = doneFile.substring(doneFile.lastIndexOf("/") + 1);
+                }
+            }
 
             if ("sftp".equalsIgnoreCase(this.protocol)) {
                 this.ftpHelper = new SftpHelperImpl();
@@ -278,6 +323,24 @@ public class FtpWriter extends Writer {
             } finally {
                 IOUtils.closeQuietly(outputStream);
             }
+
+            if (this.haveDoneFile) {
+                String doneFileFullPath = UnstructuredStorageWriterUtil.buildFilePath(
+                        this.donePath, this.doneFileName, null);
+                LOG.info(String.format("write to doneFile : [%s]", doneFileFullPath));
+
+                OutputStream doneOutputStream = null;
+                try {
+                    doneOutputStream = this.ftpHelper.getOutputStream(doneFileFullPath);
+                } catch (Exception e) {
+                    throw DataXException.asDataXException(
+                            FtpWriterErrorCode.WRITE_FILE_IO_ERROR,
+                            String.format("无法创建待写文件 : [%s]", this.doneFileName), e);
+                } finally {
+                    IOUtils.closeQuietly(doneOutputStream);
+                }
+            }
+
             LOG.info("end do write");
         }
 

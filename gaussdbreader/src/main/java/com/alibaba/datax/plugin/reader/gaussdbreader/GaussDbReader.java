@@ -10,9 +10,13 @@ import com.alibaba.datax.plugin.rdbms.util.DataBaseType;
 
 import java.util.List;
 
-public class GaussDbReader extends Reader {
+/**
+ * @author yangyi5
+ * @date 2024/8/9
+ */
+public class GaussDBReader extends Reader {
 
-    private static final DataBaseType DATABASE_TYPE = DataBaseType.GaussDB;
+    private static final DataBaseType DATABASE_TYPE = DataBaseType.GaussDb;
 
     public static class Job extends Reader.Job {
 

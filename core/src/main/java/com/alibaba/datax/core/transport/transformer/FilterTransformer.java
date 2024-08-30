@@ -292,8 +292,8 @@ public class FilterTransformer extends Transformer {
     }
 
     private Record doLike(Record record, String value, Column column) {
-        String orivalue = column.asString();
-        if (orivalue !=null && orivalue.matches(value)) {
+        String ori = column.asString();
+        if (ori !=null && ori.matches(value)) {
             return null;
         } else {
             return record;
@@ -301,8 +301,8 @@ public class FilterTransformer extends Transformer {
     }
 
     private Record doNotLike(Record record, String value, Column column) {
-        String orivalue = column.asString();
-        if (orivalue !=null &&  orivalue.matches(value)) {
+        String ori = column.asString();
+        if (ori !=null &&  ori.matches(value)) {
             return record;
         } else {
             return null;

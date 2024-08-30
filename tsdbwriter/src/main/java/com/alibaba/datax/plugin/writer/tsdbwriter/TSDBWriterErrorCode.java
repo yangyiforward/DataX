@@ -13,7 +13,6 @@ import com.alibaba.datax.common.spi.ErrorCode;
 public enum TSDBWriterErrorCode implements ErrorCode {
 
     REQUIRED_VALUE("TSDBWriter-00", "Missing the necessary value"),
-    ILLEGAL_VALUE("TSDBWriter-01", "Illegal value"),
     RUNTIME_EXCEPTION("TSDBWriter-01", "Runtime exception"),
     RETRY_WRITER_EXCEPTION("TSDBWriter-02", "After repeated attempts, the write still fails");
 

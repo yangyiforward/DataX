@@ -55,7 +55,7 @@ public class ReaderModelParser {
     }
     
     public static OTSColumn parseOTSColumn(Map<String, Object> item) {
-        if (item.containsKey(OTSConst.NAME)) {
+        if (item.containsKey(OTSConst.NAME) && item.size() == 1) {
             Object name = item.get(OTSConst.NAME);
             if (name instanceof String) {
                 String nameStr = (String) name;

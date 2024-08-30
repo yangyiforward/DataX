@@ -42,7 +42,7 @@ public class Constant {
 	/**
 	 * TODO 暂时先不考虑整个文件夹同步
 	 * 在同步音视频等二进制文件的情况下:
-	 * 半结构读插件(txtfilreader, ftpreader, hdfsreader, ossreader)需要将相对文件路径注入 RELATIVE_SOURCE_FILE 属性
+	 * 半结构读插件(txtfilereader, ftpreader, hdfsreader, ossreader)需要将相对文件路径注入 RELATIVE_SOURCE_FILE 属性
 	 * 目的是半结构化写插件可以统一使用 RELATIVE_SOURCE_FILE 获取到读端插件的所有二进制文件名及其相对路径。
 	 * 举个栗子:
 	 * 读端插件PATH配置了/home/admin/myapp/

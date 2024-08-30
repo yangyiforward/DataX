@@ -93,8 +93,9 @@ public class Hbase094xHelper {
 
     public static void closeAdmin(HBaseAdmin admin){
         try {
-            if(null != admin)
+            if(null != admin) {
                 admin.close();
+            }
         } catch (IOException e) {
             throw DataXException.asDataXException(Hbase094xReaderErrorCode.CLOSE_HBASE_ADMIN_ERROR, e);
         }
@@ -102,8 +103,9 @@ public class Hbase094xHelper {
 
     public static void closeTable(HTable table){
         try {
-            if(null != table)
+            if(null != table) {
                 table.close();
+            }
         } catch (IOException e) {
             throw DataXException.asDataXException(Hbase094xReaderErrorCode.CLOSE_HBASE_TABLE_ERROR, e);
         }

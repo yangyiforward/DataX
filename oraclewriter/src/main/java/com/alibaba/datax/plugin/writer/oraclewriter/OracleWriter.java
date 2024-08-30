@@ -18,7 +18,8 @@ public class OracleWriter extends Writer {
 		private Configuration originalConfig = null;
 		private CommonRdbmsWriter.Job commonRdbmsWriterJob;
 
-        public void preCheck() {
+        @Override
+		public void preCheck() {
             this.init();
             this.commonRdbmsWriterJob.writerPreCheck(this.originalConfig, DATABASE_TYPE);
         }
@@ -84,7 +85,8 @@ public class OracleWriter extends Writer {
 			this.commonRdbmsWriterTask.prepare(this.writerSliceConfig);
 		}
 
-		public void startWrite(RecordReceiver recordReceiver) {
+		@Override
+        public void startWrite(RecordReceiver recordReceiver) {
 			this.commonRdbmsWriterTask.startWrite(recordReceiver,
 					this.writerSliceConfig, super.getTaskPluginCollector());
 		}

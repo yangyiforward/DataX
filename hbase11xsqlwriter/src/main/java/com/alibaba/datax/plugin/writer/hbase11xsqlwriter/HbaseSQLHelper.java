@@ -313,8 +313,9 @@ public class HbaseSQLHelper {
 
     private static void closeAdmin(Admin admin){
         try {
-            if(null != admin)
+            if(null != admin) {
                 admin.close();
+            }
         } catch (IOException e) {
             throw DataXException.asDataXException(HbaseSQLWriterErrorCode.CLOSE_HBASE_AMIN_ERROR, e);
         }

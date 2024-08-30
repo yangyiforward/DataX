@@ -18,7 +18,7 @@ public class LongColumn extends Column {
 	 * 
 	 * */
 	public LongColumn(final String data) {
-		super(null, Column.Type.LONG, 0);
+		super(null, Type.LONG, 0);
 		if (null == data) {
 			return;
 		}
@@ -51,7 +51,7 @@ public class LongColumn extends Column {
 	}
 
 	private LongColumn(BigInteger data, int byteSize) {
-		super(data, Column.Type.LONG, byteSize);
+		super(data, Type.LONG, byteSize);
 	}
 
 	public LongColumn() {

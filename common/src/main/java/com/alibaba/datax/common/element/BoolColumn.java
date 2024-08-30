@@ -13,7 +13,7 @@ import java.util.Date;
 public class BoolColumn extends Column {
 
 	public BoolColumn(Boolean bool) {
-		super(bool, Column.Type.BOOL, 1);
+		super(bool, Type.BOOL, 1);
 	}
 
 	public BoolColumn(final String data) {
@@ -30,7 +30,7 @@ public class BoolColumn extends Column {
 	}
 
 	public BoolColumn() {
-		super(null, Column.Type.BOOL, 1);
+		super(null, Type.BOOL, 1);
 	}
 
 	@Override
@@ -92,7 +92,7 @@ public class BoolColumn extends Column {
 		throw DataXException.asDataXException(
 				CommonErrorCode.CONVERT_NOT_SUPPORT, "Bool类型不能转为Date .");
 	}
-	
+
 	@Override
 	public Date asDate(String dateFormat) {
 		throw DataXException.asDataXException(

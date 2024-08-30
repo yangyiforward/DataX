@@ -1,6 +1,5 @@
 package com.q1.datax.plugin.writer.kudu11xwriter;
 
-import com.alibaba.datax.common.element.Column;
 import com.alibaba.datax.common.exception.DataXException;
 import com.alibaba.datax.common.util.Configuration;
 import com.alibaba.fastjson2.JSON;
@@ -10,10 +9,8 @@ import org.apache.kudu.ColumnSchema;
 import org.apache.kudu.Schema;
 import org.apache.kudu.Type;
 import org.apache.kudu.client.*;
-import org.apache.kudu.shaded.org.checkerframework.checker.units.qual.K;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.rmi.runtime.Log;
 
 import java.nio.charset.Charset;
 import java.util.*;
@@ -156,10 +153,12 @@ public class Kudu11xHelper {
                         Thread t = new Thread(group, r,
                                 "pool-kudu_rows_add-thread-" + threadNumber.getAndIncrement(),
                                 0);
-                        if (t.isDaemon())
+                        if (t.isDaemon()) {
                             t.setDaemon(false);
-                        if (t.getPriority() != Thread.NORM_PRIORITY)
+                        }
+                        if (t.getPriority() != Thread.NORM_PRIORITY) {
                             t.setPriority(Thread.NORM_PRIORITY);
+                        }
                         return t;
                     }
                 }, new ThreadPoolExecutor.CallerRunsPolicy());

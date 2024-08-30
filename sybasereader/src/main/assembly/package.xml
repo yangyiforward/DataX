@@ -16,10 +16,17 @@
             </includes>
             <outputDirectory>plugin/reader/sybasereader</outputDirectory>
         </fileSet>
+        <!--<fileSet>-->
+        <!--    <directory>src/main/lib</directory>-->
+        <!--    <includes>-->
+        <!--        <include>jconn4-7.07.jar</include>-->
+        <!--    </includes>-->
+        <!--    <outputDirectory>plugin/reader/sybasereader/libs</outputDirectory>-->
+        <!--</fileSet>-->
         <fileSet>
-            <directory>src/main/libs</directory>
+            <directory>src/main/lib</directory>
             <includes>
-                <include>*.*</include>
+                <include>jtds-1.3.1.jar</include>
             </includes>
             <outputDirectory>plugin/reader/sybasereader/libs</outputDirectory>
         </fileSet>

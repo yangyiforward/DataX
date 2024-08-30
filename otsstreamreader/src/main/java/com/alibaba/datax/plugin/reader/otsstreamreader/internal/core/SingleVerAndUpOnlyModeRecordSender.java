@@ -5,7 +5,6 @@ import com.alibaba.datax.common.element.StringColumn;
 import com.alibaba.datax.common.plugin.RecordSender;
 import com.alibaba.datax.plugin.reader.otsstreamreader.internal.OTSStreamReaderException;
 import com.alibaba.datax.plugin.reader.otsstreamreader.internal.utils.ColumnValueTransformHelper;
-import com.alicloud.openservices.tablestore.core.protocol.timeseries.TimeseriesResponseFactory;
 import com.alicloud.openservices.tablestore.model.*;
 
 import java.util.HashMap;
@@ -18,23 +17,21 @@ import java.util.Map;
  * | pk1 | pk2 | col1 | col2 | col3 | sequence id |
  * | --- | --- | ---- | ---- | ---- | ----------- |
  * |  a  |  b  |  c1  | null | null | 001         |
- * <p>
+ *
  * 注意：删除整行，删除某列（某个版本或所有），这些增量信息都会被忽略。
  */
 public class SingleVerAndUpOnlyModeRecordSender implements IStreamRecordSender {
 
     private final RecordSender dataxRecordSender;
-    private final boolean isExportSequenceInfo;
     private String shardId;
+    private final boolean isExportSequenceInfo;
     private List<String> columnNames;
-    private List<Boolean> columnsIsTimeseriesTags;
 
-    public SingleVerAndUpOnlyModeRecordSender(RecordSender dataxRecordSender, String shardId, boolean isExportSequenceInfo, List<String> columnNames, List<Boolean> columnsIsTimeseriesTags) {
+    public SingleVerAndUpOnlyModeRecordSender(RecordSender dataxRecordSender, String shardId, boolean isExportSequenceInfo, List<String> columnNames) {
         this.dataxRecordSender = dataxRecordSender;
         this.shardId = shardId;
         this.isExportSequenceInfo = isExportSequenceInfo;
         this.columnNames = columnNames;
-        this.columnsIsTimeseriesTags = columnsIsTimeseriesTags;
     }
 
     @Override
@@ -60,49 +57,25 @@ public class SingleVerAndUpOnlyModeRecordSender implements IStreamRecordSender {
             map.put(pkCol.getName(), pkCol.getValue());
         }
 
-        /**
-         * 将时序数据中tags字段的字符串转化为Map
-         */
-        Map<String, String> tagsMap = new HashMap<>();
-        if (columnsIsTimeseriesTags != null && columnsIsTimeseriesTags.contains(true)) {
-            try{
-                tagsMap = TimeseriesResponseFactory.parseTagsOrAttrs(String.valueOf(map.get("_tags")));
-            }
-            catch (Exception ex){
-                throw new OTSStreamReaderException("Parse \"_tags\" fail, please check your config.", ex);
-            }
-
-        }
-
         for (RecordColumn recordColumn : columns) {
             if (recordColumn.getColumnType().equals(RecordColumn.ColumnType.PUT)) {
                 map.put(recordColumn.getColumn().getName(), recordColumn.getColumn().getValue());
             }
         }
 
-        boolean findColumn = false;
+        boolean findColumn  = false;
 
-        for (int i = 0; i < columnNames.size(); i++) {
-            if (columnsIsTimeseriesTags != null && columnsIsTimeseriesTags.get(i)) {
-                String value = tagsMap.get(columnNames.get(i));
-                if (value != null) {
-                    findColumn = true;
-                    line.addColumn(new StringColumn(value));
+        for (String colName : columnNames) {
+            Object value = map.get(colName);
+            if (value != null) {
+                findColumn = true;
+                if (value instanceof ColumnValue) {
+                    line.addColumn(ColumnValueTransformHelper.otsColumnValueToDataxColumn((ColumnValue) value));
                 } else {
-                    line.addColumn(new StringColumn(null));
+                    line.addColumn(ColumnValueTransformHelper.otsPrimaryKeyValueToDataxColumn((PrimaryKeyValue) value));
                 }
             } else {
-                Object value = map.get(columnNames.get(i));
-                if (value != null) {
-                    findColumn = true;
-                    if (value instanceof ColumnValue) {
-                        line.addColumn(ColumnValueTransformHelper.otsColumnValueToDataxColumn((ColumnValue) value));
-                    } else {
-                        line.addColumn(ColumnValueTransformHelper.otsPrimaryKeyValueToDataxColumn((PrimaryKeyValue) value));
-                    }
-                } else {
-                    line.addColumn(new StringColumn(null));
-                }
+                line.addColumn(new StringColumn(null));
             }
         }
 

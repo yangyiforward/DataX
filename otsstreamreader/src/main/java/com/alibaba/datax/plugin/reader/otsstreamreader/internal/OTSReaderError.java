@@ -18,10 +18,12 @@ public class OTSReaderError implements ErrorCode {
         this.description = description;
     }
 
+    @Override
     public String getCode() {
         return this.code;
     }
 
+    @Override
     public String getDescription() {
         return this.description;
     }

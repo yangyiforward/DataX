@@ -60,16 +60,12 @@ hbase11xsqlreader插件实现了从Phoenix(HBase SQL)读取数据。在底层实
                          //填写连接Phoenix的hbase集群zk地址
                         "hbaseConfig": {
                             "hbase.zookeeper.quorum": "hb-proxy-xxx-002.hbase.rds.aliyuncs.com,hb-proxy-xxx-001.hbase.rds.aliyuncs.com,hb-proxy-xxx-003.hbase.rds.aliyuncs.com"
-                        }, 
-                        //填写要读取的phoenix的命名空间
-                        "schema": "TAG",
+                        },  
                         //填写要读取的phoenix的表名
                         "table": "US_POPULATION",
                         //填写要读取的列名，不填读取所有列
                         "column": [
-                        ],
-                        //查询条件
-                       "where": "id="
+                        ]   
                     }   
                 },  
                 "writer": {
@@ -97,17 +93,10 @@ hbase11xsqlreader插件实现了从Phoenix(HBase SQL)读取数据。在底层实
 	* 必选：是 <br />
  
 	* 默认值：无 <br />
-* **schema**
- 
-	* 描述：编写Phoenix中的namespace，该值设置为''
- 
-	* 必选：是 <br />
- 
-	* 默认值：无 <br />
  
 * **table**
  
-	* 描述：编写Phoenix中的表名，该值设置为'tablename'
+	* 描述：编写Phoenix中的表名,如果有namespace，该值设置为'namespace.tablename'
  
 	* 必选：是 <br />
  
@@ -120,13 +109,7 @@ hbase11xsqlreader插件实现了从Phoenix(HBase SQL)读取数据。在底层实
 	* 必选：是 <br />
  
 	* 默认值：无 <br />
-* **where**
-
-	* 描述：填写需要从phoenix表中读取条件判断。
  
-	* 可选：是 <br />
- 
-	* 默认值：无 <br />
 
 ### 3.3 类型转换
 
@@ -189,14 +172,11 @@ hbase11xsqlreader插件实现了从Phoenix(HBase SQL)读取数据。在底层实
                         "hbaseConfig": {
                             "hbase.zookeeper.quorum": "hb-proxy-xxx-002.hbase.rds.aliyuncs.com,hb-proxy-xxx-001.hbase.rds.aliyuncs.com,hb-proxy-xxx-003.hbase.rds.aliyuncs.com"
                         },  
-                        "schema": "TAG",
                         //填写要读取的phoenix的表名
                         "table": "US_POPULATION",
                         //填写要读取的列名，不填读取所有列
                         "column": [
-                        ],
-                        //查询条件
-                       "where": "id="
+                        ]   
                     }   
                 },  
                 "writer": {
@@ -224,13 +204,7 @@ hbase11xsqlreader插件实现了从Phoenix(HBase SQL)读取数据。在底层实
 	* 必选：是 <br />
  
 	* 默认值：无 <br />
-* **schema**
-  
- 	* 描述：编写Phoenix中的namespace，该值设置为''
-  
- 	* 必选：是 <br />
-  
- 	* 默认值：无 <br />
+ 
 * **table**
  
 	* 描述：编写Phoenix中的表名,如果有namespace，该值设置为'namespace.tablename'
@@ -246,13 +220,7 @@ hbase11xsqlreader插件实现了从Phoenix(HBase SQL)读取数据。在底层实
 	* 必选：是 <br />
  
 	* 默认值：无 <br />
- * **where**
  
- 	* 描述：填写需要从phoenix表中读取条件判断。
-  
- 	* 可选：是 <br />
-  
- 	* 默认值：无 <br />
 
 ### 3.3 类型转换
 

@@ -2,26 +2,19 @@ package com.alibaba.datax.plugin.reader.odpsreader.util;
 
 import com.alibaba.datax.common.exception.DataXException;
 import com.alibaba.datax.common.util.Configuration;
-import com.alibaba.datax.common.util.MessageSource;
 import com.alibaba.datax.common.util.RangeSplitUtil;
 import com.alibaba.datax.plugin.reader.odpsreader.Constant;
 import com.alibaba.datax.plugin.reader.odpsreader.Key;
 import com.alibaba.datax.plugin.reader.odpsreader.OdpsReaderErrorCode;
 import com.aliyun.odps.Odps;
 import com.aliyun.odps.tunnel.TableTunnel.DownloadSession;
-
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public final class OdpsSplitUtil {
-    private static final Logger LOG = LoggerFactory.getLogger(OdpsSplitUtil.class);
-
-    private static final MessageSource MESSAGE_SOURCE = MessageSource.loadResourceBundle(OdpsSplitUtil.class);
 
     public static List<Configuration> doSplit(Configuration originalConfig, Odps odps,
                                               int adviceNum) {
@@ -43,17 +36,9 @@ public final class OdpsSplitUtil {
         List<String> partitions = originalConfig.getList(Key.PARTITION,
                 String.class);
 
-        if ((null == partitions || partitions.isEmpty()) && originalConfig.getBool(Key.SUCCESS_ON_NO_PATITION, false)) {
-            Configuration tempConfig = originalConfig.clone();
-            tempConfig.set(Key.PARTITION, null);
-            splittedConfigs.add(tempConfig);
-            LOG.warn(MESSAGE_SOURCE.message("odpssplitutil.4"));
-            return splittedConfigs;
-        }
-
         if (null == partitions || partitions.isEmpty()) {
             throw DataXException.asDataXException(OdpsReaderErrorCode.ILLEGAL_VALUE,
-                    MESSAGE_SOURCE.message("odpssplitutil.1"));
+                    "您所配置的分区不能为空白.");
         }
 
         //splitMode 默认为 record
@@ -156,11 +141,11 @@ public final class OdpsSplitUtil {
      */
     private static List<Pair<Long, Long>> splitRecordCount(long recordCount, int adviceNum) {
         if(recordCount<0){
-            throw new IllegalArgumentException(MESSAGE_SOURCE.message("odpssplitutil.2", recordCount));
+            throw new IllegalArgumentException("切分的 recordCount 不能为负数.recordCount=" + recordCount);
         }
 
         if(adviceNum<1){
-            throw new IllegalArgumentException(MESSAGE_SOURCE.message("odpssplitutil.3", adviceNum));
+            throw new IllegalArgumentException("切分的 adviceNum 不能为负数.adviceNum=" + adviceNum);
         }
 
         List<Pair<Long, Long>> result = new ArrayList<Pair<Long, Long>>();

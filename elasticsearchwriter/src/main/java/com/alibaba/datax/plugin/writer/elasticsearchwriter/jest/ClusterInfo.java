@@ -20,7 +20,7 @@ public class ClusterInfo extends AbstractAction<ClusterInfoResult> {
 		return createNewElasticSearchResult(new ClusterInfoResult(gson), responseBody, statusCode, reasonPhrase, gson);
 	}
 
-	public static class Builder extends AbstractAction.Builder<ClusterInfo, ClusterInfo.Builder> {
+	public static class Builder extends AbstractAction.Builder<ClusterInfo, Builder> {
 
 		public Builder() {
 			setHeader("accept", "application/json");

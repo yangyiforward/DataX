@@ -6,10 +6,15 @@ import java.util.List;
 
 public interface UnstructuredWriter extends Closeable {
 
-    public void writeOneRecord(List<String> splitedRows) throws IOException;
+    void writeOneRecord(List<String> splittedRows) throws IOException;
 
-    public void flush() throws IOException;
+    void writeHeader(List<String> header) throws IOException;
 
-    public void close() throws IOException;
+    void appendCommit() throws IOException;
+
+    void flush() throws IOException;
+
+    @Override
+    void close() throws IOException;
 
 }

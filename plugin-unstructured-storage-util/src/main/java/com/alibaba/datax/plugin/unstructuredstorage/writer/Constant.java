@@ -12,6 +12,8 @@ public class Constant {
 	
 	public static final String FILE_FORMAT_TEXT = "text";
 
+	public static final String FILE_FORMAT_DAT = "dat";
+
 	public static final String FILE_FORMAT_SQL = "sql";
 
 	//每个分块10MB，最大10000个分块, MAX_FILE_SIZE 单位: MB

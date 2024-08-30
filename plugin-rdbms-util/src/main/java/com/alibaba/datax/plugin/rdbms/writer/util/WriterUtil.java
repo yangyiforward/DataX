@@ -120,16 +120,26 @@ public final class WriterUtil {
         // && writeMode.trim().toLowerCase().startsWith("replace")
         String writeDataSqlTemplate;
         if (forceUseUpdate ||
-                ((dataBaseType == DataBaseType.MySql || dataBaseType == DataBaseType.Tddl) && writeMode.trim().toLowerCase().startsWith("update"))
-                ) {
-            //update只在mysql下使用
+                ((dataBaseType == DataBaseType.MySql || dataBaseType == DataBaseType.MySql8 || dataBaseType == DataBaseType.PostgreSQL)
+                        && writeMode.trim().toLowerCase().startsWith("update"))
+        ) {
 
-            writeDataSqlTemplate = new StringBuilder()
-                    .append("INSERT INTO %s (").append(StringUtils.join(columnHolders, ","))
-                    .append(") VALUES(").append(StringUtils.join(valueHolders, ","))
-                    .append(")")
-                    .append(onDuplicateKeyUpdateString(columnHolders))
-                    .toString();
+            if (dataBaseType == DataBaseType.PostgreSQL) {
+                String columns = StringUtils.join(columnHolders, ",");
+                String placeHolders = StringUtils.join(valueHolders, ",");
+
+                writeDataSqlTemplate = "INSERT INTO %s (" + columns + ") VALUES ( " + placeHolders + " )" +
+                        doPostgresqlUpdate(writeMode, columnHolders);
+            } else {
+                //update在mysql下使用
+                writeDataSqlTemplate = new StringBuilder()
+                        .append("INSERT INTO %s (").append(StringUtils.join(columnHolders, ","))
+                        .append(") VALUES(").append(StringUtils.join(valueHolders, ","))
+                        .append(")")
+                        .append(onDuplicateKeyUpdateString(columnHolders))
+                        .toString();
+            }
+
         } else {
 
             //这里是保护,如果其他错误的使用了update,需要更换为replace
@@ -143,6 +153,32 @@ public final class WriterUtil {
         }
 
         return writeDataSqlTemplate;
+    }
+
+    private static String doPostgresqlUpdate(String writeMode, List<String> columnHolders) {
+
+        String conflict = writeMode.replace("update", "");
+        StringBuilder sb = new StringBuilder();
+        sb.append(" ON CONFLICT ");
+        sb.append(conflict);
+        sb.append(" DO ");
+        if (columnHolders == null || columnHolders.size() < 1) {
+            sb.append("NOTHING");
+            return sb.toString();
+        }
+        sb.append(" UPDATE SET ");
+        boolean first = true;
+        for (String column : columnHolders) {
+            if (!first) {
+                sb.append(",");
+            } else {
+                first = false;
+            }
+            sb.append(column);
+            sb.append("=excluded.");
+            sb.append(column);
+        }
+        return sb.toString();
     }
 
     public static String onDuplicateKeyUpdateString(List<String> columnHolders){

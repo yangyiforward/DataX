@@ -16,4 +16,8 @@ public class Key {
     public static final String CONNECTPATTERN = "connectPattern";
     
     public static final String PATH = "path";
+
+    public static final String HAVEDONEFILE = "haveDoneFile";
+
+    public static final String DONEFILENAME = "doneFileName";
 }

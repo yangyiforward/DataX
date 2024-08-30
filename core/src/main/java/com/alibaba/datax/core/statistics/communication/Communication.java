@@ -161,7 +161,7 @@ public class Communication extends BaseObject implements Cloneable {
          * clone counter
          */
         if (this.counter != null) {
-            for (Map.Entry<String, Number> entry : this.counter.entrySet()) {
+            for (Entry<String, Number> entry : this.counter.entrySet()) {
                 String key = entry.getKey();
                 Number value = entry.getValue();
                 if (value instanceof Long) {
@@ -180,7 +180,7 @@ public class Communication extends BaseObject implements Cloneable {
          * clone message
          */
         if (this.message != null) {
-            for (final Map.Entry<String, List<String>> entry : this.message.entrySet()) {
+            for (final Entry<String, List<String>> entry : this.message.entrySet()) {
                 String key = entry.getKey();
                 List value = new ArrayList() {{
                     addAll(entry.getValue());

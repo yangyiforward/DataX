@@ -1,12 +1,18 @@
 package com.alibaba.datax.plugin.reader.otsreader.adaptor;
 
-import com.alicloud.openservices.tablestore.model.ColumnType;
-import com.alicloud.openservices.tablestore.model.PrimaryKeyType;
-import com.alicloud.openservices.tablestore.model.PrimaryKeyValue;
-import com.google.gson.*;
-import org.apache.commons.codec.binary.Base64;
-
 import java.lang.reflect.Type;
+
+import com.aliyun.openservices.ots.model.ColumnType;
+import com.aliyun.openservices.ots.model.PrimaryKeyType;
+import com.aliyun.openservices.ots.model.PrimaryKeyValue;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 
 /**
  * {"type":"INF_MIN", "value":""}
@@ -25,28 +31,26 @@ public class PrimaryKeyValueAdaptor implements JsonDeserializer<PrimaryKeyValue>
             JsonSerializationContext c) {
         JsonObject json = new JsonObject();
         
-        if (obj.isInfMin()) {
+        if (obj == PrimaryKeyValue.INF_MIN) {
             json.add(TYPE, new JsonPrimitive(INF_MIN)); 
+            json.add(VALUE, new JsonPrimitive(""));
             return json;
         }
         
-        if (obj.isInfMax()) {
+        if (obj == PrimaryKeyValue.INF_MAX) {
             json.add(TYPE, new JsonPrimitive(INF_MAX)); 
+            json.add(VALUE, new JsonPrimitive(""));
             return json;
         }
 
         switch (obj.getType()) {
         case STRING : 
-            json.add(TYPE, new JsonPrimitive(ColumnType.STRING.toString()));
+            json.add(TYPE, new JsonPrimitive(ColumnType.STRING.toString())); 
             json.add(VALUE, new JsonPrimitive(obj.asString()));
             break;
         case INTEGER : 
             json.add(TYPE, new JsonPrimitive(ColumnType.INTEGER.toString())); 
             json.add(VALUE, new JsonPrimitive(obj.asLong()));
-            break;
-        case BINARY : 
-            json.add(TYPE, new JsonPrimitive(ColumnType.BINARY.toString())); 
-            json.add(VALUE, new JsonPrimitive(Base64.encodeBase64String(obj.asBinary())));
             break;
         default:
             throw new IllegalArgumentException("Unsupport serialize the type : " + obj.getType() + "");
@@ -60,16 +64,15 @@ public class PrimaryKeyValueAdaptor implements JsonDeserializer<PrimaryKeyValue>
 
         JsonObject obj = ele.getAsJsonObject();
         String strType = obj.getAsJsonPrimitive(TYPE).getAsString();
+        JsonPrimitive jsonValue =  obj.getAsJsonPrimitive(VALUE);
         
-        if (strType.equalsIgnoreCase(INF_MIN)) {
+        if (strType.equals(INF_MIN)) {
             return PrimaryKeyValue.INF_MIN;
         }
         
-        if (strType.equalsIgnoreCase(INF_MAX)) {
+        if (strType.equals(INF_MAX)) {
             return PrimaryKeyValue.INF_MAX;
         }
-        
-        JsonPrimitive jsonValue =  obj.getAsJsonPrimitive(VALUE);
         
         PrimaryKeyValue value = null;
         PrimaryKeyType type = PrimaryKeyType.valueOf(strType);
@@ -79,9 +82,6 @@ public class PrimaryKeyValueAdaptor implements JsonDeserializer<PrimaryKeyValue>
             break;
         case INTEGER : 
             value = PrimaryKeyValue.fromLong(jsonValue.getAsLong());
-            break;
-        case BINARY : 
-            value = PrimaryKeyValue.fromBinary(Base64.decodeBase64(jsonValue.getAsString()));
             break;
         default:
             throw new IllegalArgumentException("Unsupport deserialize the type : " + type + "");

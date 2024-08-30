@@ -45,6 +45,12 @@ public class MongoUtil {
         }
         try {
             MongoCredential credential = MongoCredential.createCredential(userName, database, password.toCharArray());
+            //MongoClient mongoClient = MongoClients.create(
+            //        MongoClientSettings.builder()
+            //                .applyToClusterSettings(builder ->
+            //                        builder.hosts(Arrays.asList(new ServerAddress("<hostname>", "<port>"))))
+            //                .credential(credential)
+            //                .build());
             return new MongoClient(parseServerAddress(addressList), Arrays.asList(credential));
 
         } catch (UnknownHostException e) {

@@ -54,7 +54,9 @@ public class CassandraReaderHelper {
   static class TypeNotSupported extends Exception{}
 
   static String toJSonString(Object o, DataType type ) throws Exception{
-    if( o == null ) return JSON.toJSONString(null);
+    if( o == null ) {
+      return JSON.toJSONString(null);
+    }
     switch (type.getName()) {
     case LIST:
     case MAP:
@@ -69,7 +71,9 @@ public class CassandraReaderHelper {
   }
 
   static Object transferObjectForJson(Object o,DataType type) throws TypeNotSupported{
-    if( o == null ) return o;
+    if( o == null ) {
+      return o;
+    }
     switch (type.getName()) {
     case ASCII:
     case TEXT:
@@ -264,7 +268,7 @@ public class CassandraReaderHelper {
       TaskPluginCollector taskPluginCollector) {
 
     try {
-      for (int i = 0; i < columnNumber; i++)
+      for (int i = 0; i < columnNumber; i++) {
         try {
           if (rs.isNull(i)) {
             record.addColumn(new StringColumn());
@@ -298,7 +302,6 @@ public class CassandraReaderHelper {
           record.addColumn(new LongColumn(rs.getInt(i)));
           break;
 
-        case COUNTER:
         case BIGINT:
           record.addColumn(new LongColumn(rs.getLong(i)));
           break;
@@ -401,6 +404,7 @@ public class CassandraReaderHelper {
                     metaData.getName(i),
                     metaData.getType(i)));
 
+      }
       }
     } catch (Exception e) {
       //TODO 这里识别为脏数据靠谱吗？
@@ -558,6 +562,26 @@ public class CassandraReaderHelper {
                 CassandraReaderErrorCode.CONF_ERROR,
                 String.format(
                     "配置信息有错误.列信息中需要包含'%s'字段 .",Key.COLUMN_NAME));
+      }
+      if( name.startsWith(Key.WRITE_TIME) ) {
+        String colName = name.substring(Key.WRITE_TIME.length(),name.length() - 1 );
+        ColumnMetadata col = tableMetadata.getColumn(colName);
+        if( col == null ) {
+          throw DataXException
+              .asDataXException(
+                  CassandraReaderErrorCode.CONF_ERROR,
+                  String.format(
+                      "配置信息有错误.列'%s'不存在 .",colName));
+        }
+      } else {
+        ColumnMetadata col = tableMetadata.getColumn(name);
+        if( col == null ) {
+          throw DataXException
+              .asDataXException(
+                  CassandraReaderErrorCode.CONF_ERROR,
+                  String.format(
+                      "配置信息有错误.列'%s'不存在 .",name));
+        }
       }
     }
   }

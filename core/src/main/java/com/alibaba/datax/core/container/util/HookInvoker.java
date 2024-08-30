@@ -10,15 +10,15 @@ import com.alibaba.datax.common.spi.Hook;
 import com.alibaba.datax.common.util.Configuration;
 import com.alibaba.datax.core.util.FrameworkErrorCode;
 import com.alibaba.datax.core.util.container.JarLoader;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONArray;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.ServiceLoader;
+import java.util.*;
 
 /**
  * 扫描给定目录的所有一级子目录，每个子目录当作一个Hook的目录。
@@ -56,13 +56,33 @@ public class HookInvoker {
             throw DataXException.asDataXException(FrameworkErrorCode.HOOK_LOAD_ERROR, "获取HOOK子目录返回null");
         }
 
-        for (String subDir : subDirs) {
-            doInvoke(new File(baseDir, subDir).getAbsolutePath());
+        String hooks = conf.getString("job.hooks");
+        if (StringUtils.isEmpty(hooks)) {
+            return;
         }
 
+        JSONArray hookList = JSON.parseArray(hooks);
+        List<String> hookKeys = new ArrayList<>();
+        for (int i=0; i<hookList.size(); i++) {
+            List<String> hookKey = new ArrayList<>(hookList.getJSONObject(i).keySet());
+            hookKeys.addAll(hookKey);
+        }
+
+        List<String> subDirList = new ArrayList<>();
+        Collections.addAll(subDirList, subDirs);
+
+        // 根据json中hooks参数配置顺序执行hook
+        for (String hookKey : hookKeys) {
+            if (subDirList.contains(hookKey.split("_")[0])) {
+                doInvoke(new File(baseDir, hookKey.split("_")[0]).getAbsolutePath(), hookKey);
+            } else {
+                LOG.error("{} hook file doesn't exist!", hookKey);
+                throw DataXException.asDataXException(FrameworkErrorCode.HOOK_LOAD_ERROR, "请检查Hooks内参数名称和DataX hook文件目录");
+            }
+        }
     }
 
-    private void doInvoke(String path) {
+    private void doInvoke(String path, String hookKey) {
         ClassLoader oldClassLoader = Thread.currentThread().getContextClassLoader();
         try {
             JarLoader jarLoader = new JarLoader(new String[]{path});
@@ -73,6 +93,7 @@ public class HookInvoker {
             } else {
                 Hook hook = hookIt.next();
                 LOG.info("Invoke hook [{}], path: {}", hook.getName(), path);
+                conf.set("hookKey", hookKey);
                 hook.invoke(conf, msg);
             }
         } catch (Exception e) {

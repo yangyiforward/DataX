@@ -208,17 +208,19 @@ public class DESCipher {
 		String stmp = "";
 		for (int n = 0; n < b.length; n++) {
 			stmp = (Integer.toHexString(b[n] & 0XFF));
-			if (stmp.length() == 1)
+			if (stmp.length() == 1) {
 				hs = hs + "0" + stmp;
-			else
+			} else {
 				hs = hs + stmp;
+			}
 		}
 		return hs.toUpperCase();
 	}
 
 	public static byte[] hex2byte(byte[] b) {
-		if ((b.length % 2) != 0)
+		if ((b.length % 2) != 0) {
 			throw new IllegalArgumentException("The length is not an even number");
+		}
 		byte[] b2 = new byte[b.length / 2];
 		for (int n = 0; n < b.length; n += 2) {
 			String item = new String(b, n, 2);

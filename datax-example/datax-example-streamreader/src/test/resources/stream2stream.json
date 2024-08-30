@@ -15,14 +15,16 @@
                 "type": "string",
                 "value": "hello，你好，世界-DataX"
               }
-            ]
+            ],
+            "password": ""
           }
         },
         "writer": {
           "name": "streamwriter",
           "parameter": {
             "encoding": "UTF-8",
-            "print": true
+            "print": true,
+            "password": ""
           }
         }
       }

@@ -1,0 +1,7 @@
+{
+    "name": "s3reader",
+    "class": "com.alibaba.datax.plugin.reader.s3reader.S3Reader",
+    "description": "mechanism: use datax framework to transport data from s3 file. warn: The more you know about the data, the less problems you encounter.",
+    "developer": "yangyi"
+}
+
