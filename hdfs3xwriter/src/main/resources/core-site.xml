@@ -40,7 +40,7 @@
   </property>
   <property>
     <name>hadoop.security.key.provider.path</name>
-    <value>kms://http@dipper-uatp-dp-cdp06.cicc.com:9292/kms</value>
+    <value>kms://http@dipper-dev-dp-cdp06.cicc.com:9292/kms</value>
   </property>
   <property>
     <name>hadoop.security.auth_to_local</name>
@@ -207,6 +207,14 @@ DEFAULT</value>
     <value>*</value>
   </property>
   <property>
+    <name>hadoop.proxyuser.readonly_finereport.groups</name>
+    <value>*</value>
+  </property>
+  <property>
+    <name>hadoop.proxyuser.readonly_finereport.hosts</name>
+    <value>*</value>
+  </property>
+  <property>
     <name>hadoop.proxyuser.dmp.groups</name>
     <value>*</value>
   </property>
@@ -215,11 +223,19 @@ DEFAULT</value>
     <value>*</value>
   </property>
   <property>
-    <name>hadoop.proxyuser.readonly_finereport.groups</name>
+    <name>hadoop.proxyuser.spark.groups</name>
     <value>*</value>
   </property>
   <property>
-    <name>hadoop.proxyuser.readonly_finereport.hosts</name>
+    <name>hadoop.proxyuser.spark.hosts</name>
+    <value>*</value>
+  </property>
+  <property>
+    <name>hadoop.proxyuser.delegator.groups</name>
+    <value>*</value>
+  </property>
+  <property>
+    <name>hadoop.proxyuser.delegator.hosts</name>
     <value>*</value>
   </property>
   <property>
@@ -229,7 +245,6 @@ DEFAULT</value>
   <property>
     <name>ranger.client.pool.size</name>
     <value>1</value>
-    <final>true</final>
   </property>
   <property>
     <name>hadoop.proxyuser.tuomin.groups</name>

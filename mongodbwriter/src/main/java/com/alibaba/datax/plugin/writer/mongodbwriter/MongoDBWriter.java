@@ -58,7 +58,7 @@ public class MongoDBWriter extends Writer{
     public static class Task extends Writer.Task {
 
         private static final Logger logger = LoggerFactory.getLogger(Task.class);
-        private   Configuration       writerSliceConfig;
+        private Configuration writerSliceConfig;
 
         private MongoClient mongoClient;
 
@@ -226,7 +226,7 @@ public class MongoDBWriter extends Writer{
                                 } else {
                                     data.put(columnMeta.getJSONObject(i).getString(KeyConstant.COLUMN_NAME), record.getColumn(i).asString().split(splitter));
                                 }
-                            } else if(type.toLowerCase().equalsIgnoreCase("json")) {
+                            } else if(type.equalsIgnoreCase("json")) {
                                 //如果是json类型,将其进行转换
                                 Object mode = com.mongodb.util.JSON.parse(record.getColumn(i).asString());
                                 data.put(columnMeta.getJSONObject(i).getString(KeyConstant.COLUMN_NAME),JSON.toJSON(mode));
@@ -317,8 +317,8 @@ public class MongoDBWriter extends Writer{
         @Override
         public void init() {
             this.writerSliceConfig = this.getPluginJobConf();
-            this.userName = writerSliceConfig.getString(KeyConstant.MONGO_USER_NAME);
-            this.password = writerSliceConfig.getString(KeyConstant.MONGO_USER_PASSWORD);
+            this.userName = writerSliceConfig.getString(KeyConstant.MONGO_USERNAME);
+            this.password = writerSliceConfig.getString(KeyConstant.MONGO_PASSWORD);
             this.database = writerSliceConfig.getString(KeyConstant.MONGO_DB_NAME);
             if(!Strings.isNullOrEmpty(userName) && !Strings.isNullOrEmpty(password)) {
                 this.mongoClient = MongoUtil.initCredentialMongoClient(this.writerSliceConfig,userName,password,database);

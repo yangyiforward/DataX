@@ -16,11 +16,11 @@ public class KeyConstant {
     /**
      * mongodb 的用户名
      */
-    public static final String MONGO_USER_NAME = "userName";
+    public static final String MONGO_USERNAME = "username";
     /**
      * mongodb 密码
      */
-    public static final String MONGO_USER_PASSWORD = "userPassword";
+    public static final String MONGO_PASSWORD = "password";
     /**
      * mongodb 数据库名
      */

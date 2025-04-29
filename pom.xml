@@ -79,6 +79,7 @@
         <module>dolphindbreader</module>
         <module>gaussdbreader</module>
         <module>clickhousereader</module>
+        <module>sensorsreader</module>
 
         <!-- writer -->
         <module>mysqlwriter</module>

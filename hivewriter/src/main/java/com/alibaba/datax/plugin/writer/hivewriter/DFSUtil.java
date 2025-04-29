@@ -45,7 +45,7 @@ public class DFSUtil {
         //是否有Kerberos认证
         this.haveKerberos = true;
         if (haveKerberos) {
-            this.kerberosKeytabFilePath = "/opt/soft/cdp_job_jar/multi_tenancy_keytab/dipper_etl_uat.keytab";
+            this.kerberosKeytabFilePath = "/opt/soft/cdp_job_jar/multi_tenancy_keytab/dipper_etl_dev.keytab";
             this.kerberosPrincipal = "dipper_etl@CICC.COM";
             this.hadoopConf.set(HADOOP_SECURITY_AUTHENTICATION_KEY, "kerberos");
         }

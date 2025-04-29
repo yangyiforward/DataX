@@ -393,7 +393,7 @@ public final class DBUtil {
                                                    String url, Properties prop) {
         try {
             Class.forName(dataBaseType.getDriverClassName());
-            if (dataBaseType.getDriverClassName().equals("org.apache.hive.jdbc.HiveDriver")) {
+            if (dataBaseType.equals(DataBaseType.Hive) || dataBaseType.equals(DataBaseType.TBDS) || dataBaseType.equals(DataBaseType.Kudu)) {
                 DriverManager.setLoginTimeout(Constant.HIVE_TIMEOUT_SECONDS);
                 LOG.info("Use HIVE_TIMEOUT_SECONDS");
             } else {
@@ -436,7 +436,16 @@ public final class DBUtil {
         Statement stmt = conn.createStatement(ResultSet.TYPE_FORWARD_ONLY,
                 ResultSet.CONCUR_READ_ONLY);
         stmt.setFetchSize(fetchSize);
-        stmt.setQueryTimeout(queryTimeout);
+        try {
+            stmt.setQueryTimeout(queryTimeout);
+        } catch (SQLException e) {
+            if (e.getMessage().contains("Method not supported")) {
+                LOG.warn("setQueryTimeout failed, the statement not support queryTimeout");
+            } else {
+                LOG.warn("setQueryTimeout failed");
+                throw e;
+            }
+        }
         return query(stmt, sql);
     }
 

@@ -247,13 +247,13 @@ public class SftpHelperImpl implements IFtpHelper {
 
     @Override
     public Set<String> getAllFilesInDir(String dir, String prefixFileName) {
-        Set<String> allFilesWithPointedPrefix = new HashSet<String>();
+        Set<String> allFilesWithPointedPrefix = new HashSet<>();
         try {
             this.printWorkingDirectory();
             @SuppressWarnings("rawtypes")
             Vector allFiles = this.channelSftp.ls(dir);
-            LOG.debug(String.format("ls: %s", JSON.toJSONString(allFiles,
-                    JSONWriter.Feature.UseSingleQuotes)));
+            //LOG.debug(String.format("ls: %s", JSON.toJSONString(allFiles,
+            //        JSONWriter.Feature.UseSingleQuotes)));
             for (int i = 0; i < allFiles.size(); i++) {
                 LsEntry le = (LsEntry) allFiles.get(i);
                 String strName = le.getFilename();

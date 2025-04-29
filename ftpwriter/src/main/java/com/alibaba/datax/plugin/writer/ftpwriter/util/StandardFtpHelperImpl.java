@@ -242,9 +242,8 @@ public class StandardFtpHelperImpl implements IFtpHelper {
             }
             this.printWorkingDirectory();
             FTPFile[] fs = this.ftpClient.listFiles(dir);
-            // LOG.debug(JSON.toJSONString(this.ftpClient.listNames(dir)));
-            LOG.debug(String.format("ls: %s",
-                    JSON.toJSONString(fs, JSONWriter.Feature.UseSingleQuotes)));
+            //LOG.debug(String.format("ls: %s",
+            //        JSON.toJSONString(fs, JSONWriter.Feature.UseSingleQuotes)));
             for (FTPFile ff : fs) {
                 String strName = ff.getName();
                 if (strName.startsWith(prefixFileName)) {

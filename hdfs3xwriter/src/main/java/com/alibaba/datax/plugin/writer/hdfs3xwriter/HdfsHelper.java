@@ -59,11 +59,11 @@ public class HdfsHelper {
         hadoopConf.set(HDFS_DEFAULTFS_KEY, defaultFS);
 
         //是否有Kerberos认证
-        this.haveKerberos = true;
+        this.haveKerberos = taskConfig.getBool(Key.HAVE_KERBEROS, false);
         if (haveKerberos) {
-            this.kerberosKeytabFilePath = "/home/zj-developer/dipper_etl_uat.keytab";
-            this.kerberosPrincipal = "dipper_etl@CICC.COM";
-            this.hadoopConf.set(HADOOP_SECURITY_AUTHENTICATION_KEY, "kerberos");
+            this.kerberosKeytabFilePath = taskConfig.getString(Key.KERBEROS_KEYTAB_FILE_PATH);
+            this.kerberosPrincipal = taskConfig.getString(Key.KERBEROS_PRINCIPAL);
+            hadoopConf.set(HADOOP_SECURITY_AUTHENTICATION_KEY, "kerberos");
         }
         this.kerberosAuthentication(this.kerberosPrincipal, this.kerberosKeytabFilePath);
         conf = new JobConf(hadoopConf);

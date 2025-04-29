@@ -20,7 +20,7 @@ echo '##########################################################################
 echo 'build image'
 echo '##########################################################################'
 
-/bin/bash ci/scripts/build-image.sh uat ${ARTIFACTORY_REPOSITORY}
+/bin/bash ci/scripts/build-image.sh dev ${ARTIFACTORY_REPOSITORY}
 
 if [ $? != 0 ]; then
     echo "build image 失败"

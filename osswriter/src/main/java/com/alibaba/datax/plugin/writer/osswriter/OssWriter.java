@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
+import com.alibaba.datax.plugin.unstructuredstorage.writer.Constant;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -367,7 +368,7 @@ public class OssWriter extends Writer {
 
                     // write: upload data to current object
                     UnstructuredStorageWriterUtil.transportOneRecord(record,
-                            this.nullFormat, this.dateParse,
+                            this.nullFormat, String.valueOf(this.fieldDelimiter), this.dateParse,
                             this.getTaskPluginCollector(), unstructuredWriter, new ArrayList<>(), this.byteEncoding);
 
                     if (sb.length() >= partSize) {

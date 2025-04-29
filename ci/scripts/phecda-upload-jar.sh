@@ -62,7 +62,7 @@ JAR_FULL_NAME=${APP_NAME}-${GIT_BRANCH}-${CURR_DATE}-${COMMIT_ID}.tar.gz
 cp ${SERVICE_PACKAGE_NAME} ${TARGET_FOLDER}/${JAR_FULL_NAME}
 
 cd ${TARGET_FOLDER}
-/usr/install/jfrogv2/jfrog rt u ${JAR_FULL_NAME} ${ARTIFACTORY_REPOSITORY}/${APP_NAME}/uat/ --recursive=false
+/usr/install/jfrogv2/jfrog rt u ${JAR_FULL_NAME} ${ARTIFACTORY_REPOSITORY}/${APP_NAME}/dev/ --recursive=false
 
 if [ $? != 0 ]; then
     cd ..
@@ -75,7 +75,7 @@ echo '##########################################################################
 
 echo 'phecda callback'
 echo '##########################################################################'
-curl -X POST -F "imageName=https://${ARTIFACTORY_DOMAIN}/artifactory/${ARTIFACTORY_REPOSITORY}/${APP_NAME}/uat/${JAR_FULL_NAME}" -F "crid=${CR_ID}" -F "compileId=${jobId}" -F "appName=${APP_NAME}" http://${PHECDA_DOMAIN}/package-switch/callBack
+curl -X POST -F "imageName=https://${ARTIFACTORY_DOMAIN}/artifactory/${ARTIFACTORY_REPOSITORY}/${APP_NAME}/dev/${JAR_FULL_NAME}" -F "crid=${CR_ID}" -F "compileId=${jobId}" -F "appName=${APP_NAME}" http://${PHECDA_DOMAIN}/package-switch/callBack
 
 echo '##########################################################################'
 

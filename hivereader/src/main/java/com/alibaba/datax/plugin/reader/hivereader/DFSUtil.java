@@ -17,9 +17,8 @@ import java.util.*;
 public class DFSUtil {
     private static final Logger LOG = LoggerFactory.getLogger(HiveReader.Job.class);
 
-    private org.apache.hadoop.conf.Configuration hadoopConf = null;
-    private String specifiedFileType = null;
-    private Boolean haveKerberos = false;
+    private org.apache.hadoop.conf.Configuration hadoopConf;
+    private Boolean haveKerberos;
     private String kerberosKeytabFilePath;
     private String kerberosPrincipal;
 
@@ -43,12 +42,12 @@ public class DFSUtil {
             }
         }
         //集群配置写死
-        hadoopConf.set(HDFS_DEFAULTFS_KEY, "hdfs://dipper-uatp-dp-cdp01.cicc.com:8020");
+        hadoopConf.set(HDFS_DEFAULTFS_KEY, "hdfs://dipper-dev-dp-cdp01.cicc.com:8020");
 
         //是否有Kerberos认证
         this.haveKerberos = true;
         if (haveKerberos) {
-            this.kerberosKeytabFilePath = "/opt/soft/cdp_job_jar/multi_tenancy_keytab/dipper_etl_uat.keytab";
+            this.kerberosKeytabFilePath = "/opt/soft/cdp_job_jar/multi_tenancy_keytab/dipper_etl_dev.keytab";
             this.kerberosPrincipal = "dipper_etl@CICC.COM";
             this.hadoopConf.set(HADOOP_SECURITY_AUTHENTICATION_KEY, "kerberos");
         }

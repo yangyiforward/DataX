@@ -23,6 +23,7 @@ public enum DataBaseType {
     OceanBase("oceanbase", "com.alipay.oceanbase.jdbc.Driver"),
     Hive("hive","org.apache.hive.jdbc.HiveDriver"),
     TBDS("tbds","org.apache.hive.jdbc.HiveDriver"),
+    Kudu("kudu","org.apache.hive.jdbc.HiveDriver"),
     //Sybase("sybase","com.sybase.jdbc4.jdbc.SybDriver"),
     Sybase("sybase","net.sourceforge.jtds.jdbc.Driver"),
     OpenGauss("opengauss","org.postgresql.Driver"),
@@ -75,6 +76,7 @@ public enum DataBaseType {
             case Oscar:
             case Hive:
             case TBDS:
+            case Kudu:
             case Sybase:
             case OpenGauss:
             case DolphinDb:

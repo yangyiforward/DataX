@@ -1,0 +1,15 @@
+{
+  "name": "sensorsreader",
+  "parameter": {
+    "username": "",
+    "password": "",
+    "column": [],
+    "connection": [
+      {
+        "jdbcUrl": [],
+        "table": []
+      }
+    ],
+    "where": ""
+  }
+}

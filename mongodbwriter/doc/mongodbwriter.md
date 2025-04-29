@@ -129,10 +129,10 @@ MongoDBWriter通过Datax框架获取Reader生成的数据，然后将Datax支持
 
 #### 4 参数说明
 
-* address： MongoDB的数据地址信息，因为MonogDB可能是个集群，则ip端口信息需要以Json数组的形式给出。【必填】
+* address： MongoDB的数据地址信息，因为MongoDB可能是个集群，则ip端口信息需要以Json数组的形式给出。【必填】
 * userName：MongoDB的用户名。【选填】
 * userPassword： MongoDB的密码。【选填】
-* collectionName： MonogoDB的集合名。【必填】
+* collectionName： MongoDB的集合名。【必填】
 * column：MongoDB的文档列名。【必填】
 * name：Column的名字。【必填】
 * type：Column的类型。【选填】

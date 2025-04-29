@@ -1,0 +1,7 @@
+{
+    "name": "sensorsreader",
+    "class": "com.alibaba.datax.plugin.reader.sensorsreader.SensorsReader",
+    "description": "use sensors impala api get data.",
+    "developer": "yangyi"
+}
+

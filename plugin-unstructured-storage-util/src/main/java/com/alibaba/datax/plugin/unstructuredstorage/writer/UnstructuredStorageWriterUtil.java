@@ -265,6 +265,8 @@ public class UnstructuredStorageWriterUtil {
         int commitSize = config.getInt(Key.COMMIT_SIZE, Constant.DEFAULT_COMMIT_SIZE);
         UnstructuredWriter unstructuredWriter = produceUnstructuredWriter(fileFormat, config, writer);
 
+        String fieldDelimiter = config.getString(Key.FIELD_DELIMITER, String.valueOf(Constant.DEFAULT_FIELD_DELIMITER));
+
         List<String> headers = config.getList(Key.HEADER, String.class);
         if (null != headers && !headers.isEmpty() && !isSqlFormat) {
             unstructuredWriter.writeHeader(headers);
@@ -279,7 +281,7 @@ public class UnstructuredStorageWriterUtil {
         String byteEncoding = config.getString(Key.BYTE_ENCODING);
         while ((record = lineReceiver.getFromReader()) != null) {
             UnstructuredStorageWriterUtil.transportOneRecord(record,
-                    nullFormat, dateParse, taskPluginCollector,
+                    nullFormat, fieldDelimiter, dateParse, taskPluginCollector,
                     unstructuredWriter, columnName, byteEncoding);
             receivedCount++;
             if (isSqlFormat && receivedCount % commitSize == 0) {
@@ -307,6 +309,9 @@ public class UnstructuredStorageWriterUtil {
         } else if (StringUtils.equalsIgnoreCase(fileFormat, Constant.FILE_FORMAT_DAT)) {
 
             Character fieldDelimiter = config.getChar(Key.FIELD_DELIMITER, Constant.DEFAULT_FIELD_DELIMITER);
+            if (fieldDelimiter == '~') {
+                LOG.info("The fieldDelimiter is '~', so the row will be break by columns");
+            }
             unstructuredWriter = TextCsvWriterManager.produceDatWriter(writer, fieldDelimiter, config);
         } else if (StringUtils.equalsIgnoreCase(fileFormat, Constant.FILE_FORMAT_SQL)) {
 
@@ -327,7 +332,7 @@ public class UnstructuredStorageWriterUtil {
     /**
      * 异常表示脏数据
      * */
-    public static void transportOneRecord(Record record, String nullFormat,
+    public static void transportOneRecord(Record record, String nullFormat, String fieldDelimiter,
                                           DateFormat dateParse, TaskPluginCollector taskPluginCollector,
                                           UnstructuredWriter unstructuredWriter, List<String> columnName, String byteEncoding) {
         // warn: default is null
@@ -353,20 +358,20 @@ public class UnstructuredStorageWriterUtil {
                         if (!isDateColumn) {
                             if (column instanceof BytesColumn) {
                                 if ("base64".equalsIgnoreCase(byteEncoding)) {
-                                    if (columnReady && i > 0) {
+                                    if (columnReady && ("~".equals(fieldDelimiter) || i > 0)) {
                                         splitedRows.add(columnName.get(i) + "=" + Base64.encodeBase64String(column.asBytes()));
                                     } else {
                                         splitedRows.add(Base64.encodeBase64String(column.asBytes()));
                                     }
                                 } else {
-                                    if (columnReady && i > 0) {
+                                    if (columnReady && ("~".equals(fieldDelimiter) || i > 0)) {
                                         splitedRows.add(columnName.get(i) + "=" + column.asString());
                                     } else {
                                         splitedRows.add(column.asString());
                                     }
                                 }
                             } else {
-                                if (columnReady && i > 0) {
+                                if (columnReady && ("~".equals(fieldDelimiter) || i > 0)) {
                                     splitedRows.add(columnName.get(i) + "=" + column.asString());
                                 } else {
                                     splitedRows.add(column.asString());
@@ -374,13 +379,13 @@ public class UnstructuredStorageWriterUtil {
                             }
                         } else {
                             if (null != dateParse) {
-                                if (columnReady && i > 0) {
+                                if (columnReady && ("~".equals(fieldDelimiter) || i > 0)) {
                                     splitedRows.add(columnName.get(i) + "=" + dateParse.format(column.asDate()));
                                 } else {
                                     splitedRows.add(dateParse.format(column.asDate()));
                                 }
                             } else {
-                                if (columnReady && i > 0) {
+                                if (columnReady && ("~".equals(fieldDelimiter) || i > 0)) {
                                     splitedRows.add(columnName.get(i) + "=" + column.asString());
                                 } else {
                                     splitedRows.add(column.asString());

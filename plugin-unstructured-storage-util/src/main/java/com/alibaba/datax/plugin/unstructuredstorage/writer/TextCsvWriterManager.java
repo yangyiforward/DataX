@@ -148,7 +148,14 @@ class DatWriterImpl implements UnstructuredWriter {
         if (splitedRows.isEmpty()) {
             LOG.info("Found one record line which is empty.");
         }
-        this.datWriter.writeRecord(splitedRows.toArray(new String[0]));
+
+        if (fieldDelimiter == '~') {
+            for (String splitedRow : splitedRows) {
+                this.datWriter.writeRecord(new String[]{splitedRow});
+            }
+        } else {
+            this.datWriter.writeRecord(splitedRows.toArray(new String[0]));
+        }
     }
 
     @Override
@@ -158,7 +165,7 @@ class DatWriterImpl implements UnstructuredWriter {
         } else if (header.size() > 1) {
             LOG.warn("The datFile header is more than one, use the first element only!");
         }
-        String headerStr = "<" + header.get(0) + ">";
+        String headerStr = header.get(0);
         this.datWriter.writeRecord(new String[]{headerStr});
     }
 

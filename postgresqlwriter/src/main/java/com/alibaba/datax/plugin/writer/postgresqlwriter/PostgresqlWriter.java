@@ -25,7 +25,7 @@ public class PostgresqlWriter extends Writer {
 			// modify by xiezhentao on 2022-04-19, add update support to postgresql
 			String writeMode = this.originalConfig.getString(Key.WRITE_MODE);
 			if (null != writeMode) {
-				if (!"insert".equalsIgnoreCase(writeMode) && !"update".equalsIgnoreCase(writeMode)) {
+				if (!"insert".equalsIgnoreCase(writeMode) && !writeMode.startsWith("update")) {
 					throw DataXException.asDataXException(DBUtilErrorCode.CONF_ERROR,
 							String.format("写入模式(writeMode)配置错误. PostgreSQL 仅支持insert, update两种模式. %s 不支持", writeMode));
 				}

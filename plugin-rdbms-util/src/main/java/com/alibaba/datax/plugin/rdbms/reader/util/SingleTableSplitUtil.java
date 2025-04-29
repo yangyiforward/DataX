@@ -173,7 +173,7 @@ public class SingleTableSplitUtil {
      * configuration为null, 是precheck的逻辑，不需要回写PK_TYPE到configuration中
      *
      */
-    private static Pair<Object, Object> checkSplitPk(Connection conn, String pkRangeSQL, int fetchSize,  String table,
+    private static Pair<Object, Object> checkSplitPk(Connection conn, String pkRangeSQL, int fetchSize, String table,
                                                      String username, Configuration configuration) {
         LOG.info("split pk [sql={}] is running... ", pkRangeSQL);
         ResultSet rs = null;
