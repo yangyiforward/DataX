@@ -1,4 +1,4 @@
-package com.cicc.datax.hook;
+package com.datax.hook;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;

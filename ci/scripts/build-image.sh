@@ -26,7 +26,7 @@ fi
 
 ENVIRONMENT=$1
 ARTIFACTORY_REPOSITORY=$2
-IMAGE_BASE=repo.cicc.com.cn/$ARTIFACTORY_REPOSITORY/
+IMAGE_BASE=repo.com.cn/$ARTIFACTORY_REPOSITORY/
 
 if [ "x$GIT_BRANCH" = "x" ]; then
     GIT_BRANCH=`git rev-parse --abbrev-ref HEAD | awk -F '/' '{print $NF}'`

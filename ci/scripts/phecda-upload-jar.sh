@@ -14,11 +14,11 @@ fi
 ARTIFACTORY_REPOSITORY=$1
 
 if [ "x${ARTIFACTORY_DOMAIN}" = "x" ]; then
-    ARTIFACTORY_DOMAIN="repo.cicc.com.cn"
+    ARTIFACTORY_DOMAIN="repo.com.cn"
 fi
 
 if [ "x${PHECDA_DOMAIN}" = "x" ]; then
-    PHECDA_DOMAIN="phecda.cicc.group"
+    PHECDA_DOMAIN="phecda.group"
 fi
 
 echo '##########################################################################'

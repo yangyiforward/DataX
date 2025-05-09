@@ -42,13 +42,13 @@ public class DFSUtil {
             }
         }
         //集群配置写死
-        hadoopConf.set(HDFS_DEFAULTFS_KEY, "hdfs://dipper-dev-dp-cdp01.cicc.com:8020");
+        hadoopConf.set(HDFS_DEFAULTFS_KEY, "hdfs://dev-cdp01:8020");
 
         //是否有Kerberos认证
         this.haveKerberos = true;
         if (haveKerberos) {
-            this.kerberosKeytabFilePath = "/opt/soft/cdp_job_jar/multi_tenancy_keytab/dipper_etl_dev.keytab";
-            this.kerberosPrincipal = "dipper_etl@CICC.COM";
+            this.kerberosKeytabFilePath = "/opt/soft/dev.keytab";
+            this.kerberosPrincipal = "dev@ABC.COM";
             this.hadoopConf.set(HADOOP_SECURITY_AUTHENTICATION_KEY, "kerberos");
         }
         this.kerberosAuthentication(this.kerberosPrincipal, this.kerberosKeytabFilePath);

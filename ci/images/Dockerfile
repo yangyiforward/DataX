@@ -1,4 +1,4 @@
-FROM repo.cicc.com.cn/public-sec-docker-virtual/zulu-openjdk-kylin:8u382b05-v5
+FROM repo.com.cn/public-sec-docker-virtual/zulu-openjdk-kylin:1111-v5
 
 ENV LANG C.UTF-8
 RUN echo 'Asia/Shanghai' >/etc/timezone

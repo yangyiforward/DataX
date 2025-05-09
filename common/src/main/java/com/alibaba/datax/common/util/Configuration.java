@@ -1141,7 +1141,7 @@ public class Configuration {
 			//String decodeContent = new String(Base64.getDecoder().decode(encodeContent),"UTF-8");
 
 			//DES ALGORITHM
-			String originKey = "vua]28^N";
+			String originKey = "zsa651]2^N";
 			Key key = getSecretKey(originKey);
 			Cipher cipher = Cipher.getInstance("des");
 			cipher.init(Cipher.DECRYPT_MODE, key);

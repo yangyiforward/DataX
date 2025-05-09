@@ -50,7 +50,7 @@ public class HiveReader extends Reader {
                 }
 
                 List<String> newJdbcUrls = new ArrayList<>();
-                newJdbcUrls.add("jdbc:hive2://dipper-dev-dp-cdp01.cicc.com:2181,dipper-dev-dp-cdp02.cicc.com:2181,dipper-dev-dp-cdp03.cicc.com:2181/" + database + ";serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2");
+                newJdbcUrls.add("jdbc:hive2://dev-cdp01:2181,dev-cdp02:2181,dev-cdp03:2181/" + database + ";serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2");
                 connection.put(Key.JDBC_URL, newJdbcUrls);
             }
             originalJson.set(Constant.CONN_MARK, connList);

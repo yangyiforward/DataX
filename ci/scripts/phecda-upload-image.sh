@@ -70,7 +70,7 @@ echo '##########################################################################
 
 echo 'phecda callback'
 echo '##########################################################################'
-curl -X POST -F "imageName=${IMAGE_FULL_NAME}" -F "crid=${CR_ID}" -F "compileId=${COMPILE_ID}" -F "appName=${APP_NAME}" http://phecda.cicc.group/package-switch/callBack
+curl -X POST -F "imageName=${IMAGE_FULL_NAME}" -F "crid=${CR_ID}" -F "compileId=${COMPILE_ID}" -F "appName=${APP_NAME}" http://phecda.group/package-switch/callBack
 
 echo '##########################################################################'
 

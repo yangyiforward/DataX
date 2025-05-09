@@ -221,7 +221,7 @@ else
     if [ -n "$MVNW_REPOURL" ]; then
       jarUrl="$MVNW_REPOURL/org/apache/maven/wrapper/maven-wrapper/3.1.0/maven-wrapper-3.1.0.jar"
     else
-      jarUrl="https://repo.cicc.com.cn/artifactory/public-maven-virtual/org/apache/maven/wrapper/maven-wrapper/3.1.0/maven-wrapper-3.1.0.jar"
+      jarUrl="https://repo.com.cn/artifactory/public-maven-virtual/org/apache/maven/wrapper/maven-wrapper/3.1.0/maven-wrapper-3.1.0.jar"
     fi
     while IFS="=" read key value; do
       case "$key" in (wrapperUrl) jarUrl="$value"; break ;;

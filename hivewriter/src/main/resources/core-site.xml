@@ -39,18 +39,6 @@
     <value>authentication</value>
   </property>
   <property>
-    <name>hadoop.security.key.provider.path</name>
-    <value>kms://http@dipper-uatp-dp-cdp06.cicc.com:9292/kms</value>
-  </property>
-  <property>
-    <name>hadoop.security.auth_to_local</name>
-    <value>RULE:[2:$1@$0](rangeradmin@CICC.COM)s/(.*)@CICC.COM/ranger/
-RULE:[2:$1@$0](rangertagsync@CICC.COM)s/(.*)@CICC.COM/rangertagsync/
-RULE:[2:$1@$0](rangerusersync@CICC.COM)s/(.*)@CICC.COM/rangerusersync/
-RULE:[2:$1@$0](rangerkms@CICC.COM)s/(.*)@CICC.COM/keyadmin/
-DEFAULT</value>
-  </property>
-  <property>
     <name>hadoop.proxyuser.oozie.hosts</name>
     <value>*</value>
   </property>

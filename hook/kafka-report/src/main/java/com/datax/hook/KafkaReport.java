@@ -1,4 +1,4 @@
-package com.cicc.datax.hook;
+package com.datax.hook;
 
 import com.alibaba.datax.common.spi.Hook;
 import com.alibaba.datax.common.util.Configuration;

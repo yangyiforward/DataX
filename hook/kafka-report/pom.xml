@@ -64,7 +64,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>com.cicc.datax.hook.KafkaReport</mainClass>
+                            <mainClass>com.datax.hook.KafkaReport</mainClass>
                         </manifest>
                     </archive>
                     <finalName>hook-kafka-report-0.0.1-SNAPSHOT</finalName>
