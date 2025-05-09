@@ -66,8 +66,9 @@
             "endpoint": "http://192.168.17.190:9200",
             "accessId": "xxxx",
             "accessKey": "xxxx",
+            "password": "",
             "index": "test-datax",
-            "type": "default",
+            "type": "_doc",
             "searchType": "dfs_query_then_fetch",
             "headers": {
             },
@@ -201,7 +202,10 @@
     * 默认值: 无
 
 * column
-    * 描述：需要读取的字段，name对应es文档的key，alias为最终记录的字段名如果为空则使用name，value表示字段为常量，child为嵌套对象
+    * 描述：需要读取的字段，name对应es文档的key，alias为最终记录的字段名如果为空则使用name，value表示字段为常量，child为嵌套对象。如需获取整个es文档，在column参数中填写"{}"
+  ```json
+          "column": [{}]
+      ```
     * 必选：是
     * 默认值：无
 

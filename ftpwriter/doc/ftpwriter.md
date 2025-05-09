@@ -57,14 +57,17 @@ FtpWriter实现了从DataX协议转为FTP文件功能，FTP文件本身是无结
                         "connectPattern": "PASV",
                         "path": "/tmp/data/",
                         "fileName": "yixiao",
+						"haveDoneFile": true,
+						"doneFileName": "/data/done/test_20230305_20230305140509.done",
                         "writeMode": "truncate|append|nonConflict",
                         "fieldDelimiter": ",",
                         "encoding": "UTF-8",
                         "nullFormat": "null",
                         "dateFormat": "yyyy-MM-dd",
-                        "fileFormat": "csv",
-			"suffix": ".csv",
-                        "header": []
+						"fileFormat": "dat",
+						"suffix": ".dat",
+						"header": ["<Price Factors>"],
+						"column": ["First","Property_Aliases","Spot","Currency","Interest_Rate","Issuser"]
                     }
                 }
             }
@@ -139,6 +142,22 @@ FtpWriter实现了从DataX协议转为FTP文件功能，FTP文件本身是无结
  
 	* 默认值：无 <br />
 
+* **haveDoneFile**
+
+	* 描述：是否需要生成标志文件。 <br />
+
+	* 必选：否 <br />
+
+	* 默认值：否 <br />
+
+* **doneFileName**
+
+	* 描述：标志文件绝对路径。 <br />
+
+	* 必选：当haveDoneFile为true时为是 <br />
+
+	* 默认值：无 <br />
+
 * **writeMode**
  
  	* 描述：FtpWriter写入前数据清理处理模式： <br />
@@ -153,7 +172,7 @@ FtpWriter实现了从DataX协议转为FTP文件功能，FTP文件本身是无结
 
 * **fieldDelimiter**
 
-	* 描述：读取的字段分隔符 <br />
+	* 描述：读取的字段分隔符。fileFormat为dat时，若fieldDelimiter为“~”，则输出字段间换行，否则不换行 <br />
  
 	* 必选：否 <br />
  
@@ -174,7 +193,6 @@ FtpWriter实现了从DataX协议转为FTP文件功能，FTP文件本身是无结
  	* 必选：否 <br />
  
  	* 默认值：utf-8 <br />
- 
 
 * **nullFormat**
 
@@ -217,6 +235,14 @@ FtpWriter实现了从DataX协议转为FTP文件功能，FTP文件本身是无结
  	* 必选：否 <br />
  
  	* 默认值：无 <br />
+
+* **column**
+
+	* 描述：fileFormat为dat时的字段名。<br />
+
+	* 必选：否 <br />
+
+	* 默认值：无 <br />
 
 ### 3.3 类型转换
 

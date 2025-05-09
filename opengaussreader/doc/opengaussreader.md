@@ -58,7 +58,7 @@ OpengaussReader插件实现了从Opengauss读取数据。在底层实现上，Op
                                     "table"
                                 ],
                                 "jdbcUrl": [
-     								"jdbc:opengauss://host:port/database"
+     								"jdbc:postgresql://host:port/database"
                                 ]
                             }
                         ]
@@ -94,6 +94,8 @@ OpengaussReader插件实现了从Opengauss读取数据。在底层实现上，Op
                     "parameter": {
                         "username": "xx",
                         "password": "xx",
+                        "haveDoneSql": true,
+                        "doneSql": "select '20230421','EOD_ARCH_0' where EXTRACT(DOW FROM TIMESTAMP '20230421') % 6 = 0;",
                         "where": "",
                         "connection": [
                             {
@@ -101,7 +103,7 @@ OpengaussReader插件实现了从Opengauss读取数据。在底层实现上，Op
                                     "select db_id,on_line_flag from db_info where db_id < 10;"
                                 ],
                                 "jdbcUrl": [
-                                    "jdbc:opengauss://host:port/database", "jdbc:opengauss://host:port/database"
+                                    "jdbc:postgresql://host:port/database", "jdbc:postgresql://host:port/database"
                                 ]
                             }
                         ]
@@ -146,6 +148,22 @@ OpengaussReader插件实现了从Opengauss读取数据。在底层实现上，Op
     * 描述：数据源指定用户名的密码 <br />
 
     * 必选：是 <br />
+
+    * 默认值：无 <br />
+
+* **haveDoneSql**
+
+    * 描述：是否需要标志SQL校验。<br />
+
+    * 必选：否 <br />
+
+    * 默认值：否 <br />
+
+* **doneSql**
+
+    * 描述：标志SQL，如标志SQL返回记录数大于等于1条，则读取数据；否则报错。<br />
+
+    * 必选：当haveDoneSql为true时为是 <br />
 
     * 默认值：无 <br />
 

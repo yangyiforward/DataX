@@ -40,11 +40,14 @@ S3Reader实现了从s3读取数据并转为DataX协议的功能，S3本身是无
                     "name": "s3reader",
                     "parameter": {
 						"accessKey": "xxxx",
-						"secretKey": "xxx",
-						"endpoint": "us-west-2",
+						"secretKey": "xxxx",
+						"endpoint": "http://us-west-2",
                         "bucket": "myBucket",
+						"haveDoneObject": true,
+						"doneCheckLevel": 2,
+						"doneObject": "/data/service/20230312/valuation.done",
                         "object": [
-                            "bazhen/*"
+                            "/data/service/20230312/*"
                         ],
                         "column": [
                             {
@@ -104,6 +107,30 @@ S3Reader实现了从s3读取数据并转为DataX协议的功能，S3本身是无
 	* 描述：S3的bucket  <br />
 
 	* 必选：是 <br />
+
+	* 默认值：无 <br />
+
+* **haveDoneObject**
+
+	* 描述：是否需要标志文件校验<br />
+
+	* 必选：否 <br />
+
+	* 默认值：否 <br />
+
+* **doneCheckLevel**
+
+	* 描述：默认为1（1：无done时报错；2：无done时不报错）<br />
+
+	* 必选：否 <br />
+
+	* 默认值：1 <br />
+
+* **doneObject**
+
+	* 描述：标志文件路径<br />
+
+	* 必选：当haveDoneObject为true时为是 <br />
 
 	* 默认值：无 <br />
 

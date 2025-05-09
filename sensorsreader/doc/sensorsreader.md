@@ -7,18 +7,16 @@ eg:
 
 ```json
 {
-    "name": "sensorsreader",
+    "name": "kudureader",
     "parameter": {
-        "username": "",
-        "password": "",
-        "column": [],
         "connection": [
             {
-                "jdbcUrl": [],
-                "table": []
+                "jdbcUrl": ["jdbc:hive2://10.111.111.11:1050/rawdata;auth=noSasl"],
+                "querySql": ["select id,first_id,second_id,$first_referrer,$first_search_keyword,$first_browser_language,$first_browser_charset,$first_visit_time,$first_referrer_host,$first_traffic_source_type from users /*SA(it_pangu_prd)*/"]
             }
         ],
-        "where": ""
+        "password": "11111",
+        "username": "admin"
     }
 }
 ```

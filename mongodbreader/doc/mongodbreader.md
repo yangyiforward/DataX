@@ -128,7 +128,10 @@ MongoDBReader通过Datax框架从MongoDB并行的读取数据，通过主控的J
 * userName：MongoDB的用户名。【选填】
 * userPassword： MongoDB的密码。【选填】
 * collectionName： MonogoDB的集合名。【必填】
-* column：MongoDB的文档列名。【必填】
+* column：MongoDB的文档列名。【必填】如需获取整个mongo文档，在column参数中不填写内容
+  ```json
+          "column": []
+      ```
 * name：Column的名字。【必填】
 * type：Column的类型。【选填】
 * splitter：因为MongoDB支持数组类型，但是Datax框架本身不支持数组类型，所以mongoDB读出来的数组类型要通过这个分隔符合并成字符串。【选填】

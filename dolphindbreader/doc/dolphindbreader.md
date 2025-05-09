@@ -38,7 +38,7 @@ dolphindbreader 底层依赖 DolphinDB Java API，采用批量读出的方式将
           "name": "dolphindbreader",
           "parameter": {
             "username": "admin",
-            "password": "5RUoaNMIgP0=",
+            "password": "11111",
             "connection": [
               {
                 "querySql": ["select * from loadTable(\"dfs://db1\", \"SZQuotation\") where Tradedate >= 2022.01.04 and Tradedate <= 2022.01.07;"],

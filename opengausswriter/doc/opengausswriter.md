@@ -83,9 +83,9 @@ OpengaussWriter通过 DataX 框架获取 Reader 生成的协议数据，根据�
                         ],
                         "connection": [
                             {
-                                "jdbcUrl": "jdbc:opengauss://127.0.0.1:3002/datax",
+                                "jdbcUrl": "jdbc:postgresql://127.0.0.1:3002/datax",
                                 "table": [
-                                    "test"
+                                    "dev.test"
                                 ]
                             }
                         ]
