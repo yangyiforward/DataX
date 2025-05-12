@@ -7,11 +7,11 @@ DataX
 
 DataX本身作为数据同步框架，将不同数据源的同步抽象为从源头数据源读取数据的Reader插件，以及向目标端写入数据的Writer插件，理论上DataX框架可以支持任意数据源类型的数据同步工作。同时DataX插件体系作为一套生态系统, 每接入一套新数据源该新加入的数据源即可实现和现有的数据源互通。
 
-###1.支持密码加密
+**1.支持密码加密**
 
 加密方式：使用DES加密算法，对json填入的数据源密码进行解密，避免暴露明文密码。
 
-###2.支持配置中心
+**2.支持配置中心**
 
 1）背景
 
@@ -33,7 +33,7 @@ export APOLLO_CONFIG_URL=http://config.apollo.com
 export APOLLO_ACCESS_KEY_SECRET=xxxxxxxx
 ```
 
-###3.支持hook顺序调用
+**3.支持hook顺序调用**
 
 - 添加配置信息
   
@@ -56,28 +56,28 @@ export APOLLO_ACCESS_KEY_SECRET=xxxxxxxx
             {
                 "HookName_5": {//HookName
                     "receiver":"XXX",//ProjectName
-                    "data": {//Data
+                    "data": {
                         "count": "~{counter.waitReaderTime}"//counter参数
                     },
                     "xxx": ""//Other params
                 }
             },
             {
-                "HookName_1": {//HookName
-                    "receiver":"XXX",//ProjectName
-                    "data": {//Data
-                        "count": "~{counter.waitReaderTime}"//counter参数
+                "HookName_1": {
+                    "receiver":"XXX",
+                    "data": {
+                        "count": "~{counter.waitReaderTime}"
                     },
-                    "xxx": ""//Other params
+                    "xxx": ""
                 }
             },
             {
-                "HookName": {//HookName
-                    "receiver":"XXX",//ProjectName
-                    "data": {//Data
-                        "count": "~{counter.stage}"//counter参数
+                "HookName": {
+                    "receiver":"XXX",
+                    "data": {
+                        "count": "~{counter.stage}"
                     },
-                    "xxx": ""//Other params
+                    "xxx": ""
                 }
             }
         ]
